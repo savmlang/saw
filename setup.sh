@@ -1,4 +1,4 @@
 #! /bin/sh
 
-./emsdk install latest
-./emsdk activate latest
+./emsdk/emsdk install latest
+./emsdk/emsdk activate latest
