@@ -21,6 +21,8 @@ jobs:
 
       - name: Setup Python
         uses: actions/setup-python@v7
+        with:
+          python-version: 3.14
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -34,6 +36,10 @@ jobs:
           bash ./setup.sh
           bash ./build.sh --release
 
+      - name: Copy .d.ts to Root
+        run: |
+          find ./target/wasm32-unknown-emscripten/release -name "saw.d.ts" -exec cp {} . \;
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
@@ -41,6 +47,6 @@ jobs:
           archive: true
           compression-level: 9
           path: |
-            ./target/wasm32-unknown-emscripten/release/saw.d.ts
+            saw.d.ts
             ./target/wasm32-unknown-emscripten/release/saw.js
             ./target/wasm32-unknown-emscripten/release/saw.wasm

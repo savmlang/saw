@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+dashmap = "6.2.1"
 libc = "^0.2"
 sasm = { git = "https://github.com/savmlang/sa.git" }
 savm = { git = "https://github.com/savmlang/sa.git", default-features = false, features = [
