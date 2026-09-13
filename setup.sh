@@ -2,3 +2,5 @@
 
 ./emsdk/emsdk install latest
 ./emsdk/emsdk activate latest
+
+npm install
