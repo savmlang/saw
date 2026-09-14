@@ -17,6 +17,9 @@ pub struct VMResolver {
   pub rodata: ISlice<u8>,
   pub rwdata: ISlice<u8>,
 
+  pub pgo_critical: ISlice<u64>,
+  pub pgo_priority: ISlice<u64>,
+
   pub cache: DashMap<u64, CacheData>,
 
   pub get_bytecode: BytecodeResolveFn,
@@ -49,10 +52,8 @@ impl BytecodeResolver for VMResolver {
     unsafe { self.sections.as_slice() }
   }
 
-  // Note
-  // Because this is for testing purposes, we do not allow to udpate PGO
   fn heuristic_pgo<'a>(&'a self) -> [&'a [u64]; 2] {
-    [&[]; 2]
+    unsafe { [self.pgo_critical.as_slice(), self.pgo_priority.as_slice()] }
   }
 
   // for WASM - it is a constant

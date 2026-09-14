@@ -1,6 +1,7 @@
 use savm::sart::salloc;
 use std::{alloc::GlobalAlloc, ffi::c_void};
 
+pub mod sasmapi;
 pub mod savmapi;
 
 #[no_mangle]

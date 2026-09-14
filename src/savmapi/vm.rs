@@ -27,6 +27,12 @@ pub extern "C" fn savm_setup(
 
   sections_begin: *mut u64,
   sections_len: usize,
+
+  pgo_critical_begin: *mut u64,
+  pgo_critical_len: usize,
+
+  pgo_priority_begin: *mut u64,
+  pgo_priority_len: usize,
 ) -> *mut VMType {
   let sections = super::ISlice {
     root: sections_begin,
@@ -50,6 +56,14 @@ pub extern "C" fn savm_setup(
     rwdata: super::ISlice {
       root: rwdata_begin,
       len: rwdata_len,
+    },
+    pgo_critical: super::ISlice {
+      root: pgo_critical_begin,
+      len: pgo_critical_len,
+    },
+    pgo_priority: super::ISlice {
+      root: pgo_priority_begin,
+      len: pgo_priority_len,
     },
     sections,
   };
