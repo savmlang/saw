@@ -3,6 +3,7 @@ use std::{iter, mem::MaybeUninit, path::PathBuf, slice, str::FromStr};
 
 use sasm::{DirFsEntry, FileSystemImpl};
 
+pub mod fsentry;
 pub mod sasmrun;
 
 #[repr(C)]

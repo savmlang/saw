@@ -258,6 +258,7 @@ dependencies = [
 [[package]]
 name = "mixedradix"
 version = "1.0.2"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 dependencies = [
  "mixedradix_macros",
 ]
@@ -265,6 +266,7 @@ dependencies = [
 [[package]]
 name = "mixedradix_macros"
 version = "1.0.2"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -462,6 +464,7 @@ checksum = "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f"
 [[package]]
 name = "saffi"
 version = "0.1.1"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 dependencies = [
  "salloc-sys",
  "savmasync-sys",
@@ -470,6 +473,7 @@ dependencies = [
 [[package]]
 name = "salloc-sys"
 version = "0.0.1"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 dependencies = [
  "libc",
 ]
@@ -477,6 +481,7 @@ dependencies = [
 [[package]]
 name = "sart"
 version = "0.1.0"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 dependencies = [
  "pastey",
  "saffi",
@@ -486,6 +491,7 @@ dependencies = [
 [[package]]
 name = "sasm"
 version = "0.0.1"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 dependencies = [
  "console",
  "indicatif",
@@ -498,6 +504,7 @@ dependencies = [
 [[package]]
 name = "savm"
 version = "0.1.0"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 dependencies = [
  "ahash",
  "lexical-core",
@@ -513,6 +520,7 @@ dependencies = [
 [[package]]
 name = "savmasync-sys"
 version = "0.1.0"
+source = "git+https://github.com/savmlang/sa.git#5082ac5360e811e9072e2eea1ba31bc694e258b7"
 
 [[package]]
 name = "saw"

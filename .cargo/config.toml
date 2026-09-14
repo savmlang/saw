@@ -2,7 +2,7 @@
 target = "wasm32-unknown-emscripten"
 
 [unstable]
-build-std = ["core", "alloc", "std", "proc_macro", "panic_abort"]
+build-std = ["core", "alloc", "std", "panic_abort"]
 
 [target.wasm32-unknown-emscripten]
 linker = "emcc"
@@ -17,41 +17,41 @@ rustflags = [
 
   # 1. #[no_mangle] pub extern "C"
   "-C",
-  "link-args=-sEXPORT_ALL=1",
+  "link-arg=-sEXPORT_ALL=1",
 
   # 2. Export JS
   "-C",
-  'link-args=-sEXPORTED_RUNTIME_METHODS=["ccall","cwrap","getValue","setValue","UTF8ToString","stringToUTF8","addFunction","removeFunction"]',
+  "link-arg=-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','addFunction','removeFunction','getValue','setValue','wasmMemory','wasmTable','HEAP8','HEAP16','HEAP32','HEAP64','HEAPU8','HEAPU16','HEAPU32','HEAPU64','HEAPF32','HEAPF64','UTF8ToString','stringToUTF8','lengthBytesUTF8','UTF16ToString','stringToUTF16','UTF32ToString','stringToUTF32','AsciiToString','stringToAscii','intArrayFromString','intArrayToString','stackSave','stackAlloc','stackRestore','writeArrayToMemory','FS']",
 
   # 3. WebAssembly runtime
   "-C",
-  "link-args=-sNO_EXIT_RUNTIME=1",
+  "link-arg=-sNO_EXIT_RUNTIME=1",
 
   # 4. ES6
   "-C",
-  "link-args=-sEXPORT_ES6=1",
+  "link-arg=-sEXPORT_ES6=1",
   "-C",
-  "link-args=-sMODULARIZE=1",
+  "link-arg=-sMODULARIZE=1",
   "-C",
-  "link-args=-sEXPORT_NAME=createSawModule",
+  "link-arg=-sEXPORT_NAME=createSawModule",
 
   # 5. saw.d.ts
   "-C",
-  "link-args=--emit-tsd=saw.d.ts",
+  "link-arg=--emit-tsd=saw.d.ts",
 
   # 6. Memory
   "-C",
-  "link-args=-sALLOW_MEMORY_GROWTH=1",
+  "link-arg=-sALLOW_MEMORY_GROWTH=1",
   "-C",
-  "link-args=-sINITIAL_MEMORY=33554432",   # 32 MB
+  "link-arg=-sINITIAL_MEMORY=33554432",   # 32 MB
   "-C",
-  "link-args=-sMAXIMUM_MEMORY=2147483648", # 2048 MB
+  "link-arg=-sMAXIMUM_MEMORY=2147483648", # 2048 MB
   "-C",
-  "link-args=-sWASM_BIGINT",
+  "link-arg=-sWASM_BIGINT",
   "-C",
-  "link-args=-sABORTING_MALLOC=0",
+  "link-arg=-sABORTING_MALLOC=0",
   "-C",
-  "link-args=-fwasm-exceptions",
+  "link-arg=-fwasm-exceptions",
 
   # 7. Threading
   "-C",
@@ -65,5 +65,5 @@ rustflags = [
 
   # 8. Callbacks
   "-C",
-  "link-args=-sALLOW_TABLE_GROWTH=1",
+  "link-arg=-sALLOW_TABLE_GROWTH=1",
 ]

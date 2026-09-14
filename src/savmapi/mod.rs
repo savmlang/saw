@@ -20,9 +20,9 @@ pub struct VMResolver {
   pub pgo_critical: ISlice<u64>,
   pub pgo_priority: ISlice<u64>,
 
-  pub cache: DashMap<u64, CacheData>,
-
   pub get_bytecode: BytecodeResolveFn,
+
+  pub cache: DashMap<u64, CacheData>,
 }
 
 // SAFETY NOTE:
