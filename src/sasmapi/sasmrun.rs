@@ -3,8 +3,6 @@ use std::borrow::Cow;
 
 use sasm::PathInfo;
 
-use crate::sasmapi::{JSMkDir, JSReadDir, JSWrite, JsReadToString, MockFS};
-
 #[no_mangle]
 pub extern "C" fn sasm_begin(
   bindir_data: *const u8,
