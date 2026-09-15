@@ -10,7 +10,7 @@ use savm::{
 pub mod vm;
 
 extern "C" {
-  pub fn js_resolve_bytecode(u64, *mut *mut u8, *mut usize);
+  pub fn js_resolve_bytecode(sectionid: u64, bufptr: *mut *mut u8, buflen: *mut usize);
 }
 
 pub struct VMResolver {

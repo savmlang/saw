@@ -74,4 +74,10 @@ rustflags = [
   "link-arg=-sASYNCIFY",
   "-C",
   "link-arg=-sASYNCIFY_IMPORTS=['js_*']",
+
+  # 10. Suppress undef
+  "-C",
+  "link-arg=-sERROR_ON_UNDEFINED_SYMBOLS=0",
+  "-C",
+  "link-arg=-sWARN_ON_UNDEFINED_SYMBOLS=1",
 ]

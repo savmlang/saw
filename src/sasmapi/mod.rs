@@ -109,7 +109,7 @@ impl FileSystemImpl for MockFS {
     let mut data_ptr = MaybeUninit::uninit();
     let mut data_len = MaybeUninit::uninit();
 
-    js_fs_read(
+    js_fs_read_to_string(
       pathstr.as_ptr(),
       pathstr.len(),
       data_ptr.as_mut_ptr(),

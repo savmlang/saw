@@ -5,7 +5,7 @@ use savm::{
   VM,
 };
 
-use crate::savmapi::{BytecodeResolveFn, VMResolver};
+use crate::savmapi::VMResolver;
 
 pub type VMType = VM<VMResolver>;
 
