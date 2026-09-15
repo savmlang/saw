@@ -69,7 +69,7 @@ pub extern "C" fn savm_setup(
 }
 
 extern "C" {
-  pub fn js_cb_vmsate(*mut VMState);
+  pub fn js_cb_vmsate(state: *mut VMState);
 }
 
 #[no_mangle]

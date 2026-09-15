@@ -47,19 +47,21 @@ impl FileSystemImpl for MockFS {
     let pathstr = path.as_ref().to_str()?;
     let contents = contents.as_ref();
 
-    js_fs_write(
-      pathstr.as_ptr(),
-      pathstr.len(),
-      contents.as_ptr(),
-      contents.len(),
-    )
-    .then_some(())
+    unsafe {
+      js_fs_write(
+        pathstr.as_ptr(),
+        pathstr.len(),
+        contents.as_ptr(),
+        contents.len(),
+      )
+      .then_some(())
+    }
   }
 
   fn mkdir<P: AsRef<std::path::Path>>(&self, path: P) -> Option<()> {
     let pathstr = path.as_ref().to_str()?;
 
-    js_fs_mkdir(pathstr.as_ptr(), pathstr.len()).then_some(())
+    unsafe { js_fs_mkdir(pathstr.as_ptr(), pathstr.len()).then_some(()) }
   }
 
   fn readdir<P: AsRef<std::path::Path>, T, F>(&self, path: P, cb: F) -> T
@@ -72,18 +74,18 @@ impl FileSystemImpl for MockFS {
 
     let mut entries_ptr = MaybeUninit::uninit();
     let mut entries_len_ptr = MaybeUninit::uninit();
-
-    let Some(()) = js_fs_readdir(
-      pathstr.as_ptr(),
-      pathstr.len(),
-      entries_ptr.as_mut_ptr(),
-      entries_len_ptr.as_mut_ptr(),
-    )
-    .then_some(()) else {
-      return cb(&mut iter::empty());
-    };
-
+    
     unsafe {
+      let Some(()) = js_fs_readdir(
+        pathstr.as_ptr(),
+        pathstr.len(),
+        entries_ptr.as_mut_ptr(),
+        entries_len_ptr.as_mut_ptr(),
+      )
+      .then_some(()) else {
+        return cb(&mut iter::empty());
+      };
+
       let entries = entries_ptr.assume_init();
       let entries_len = entries_len_ptr.assume_init();
 
@@ -109,15 +111,16 @@ impl FileSystemImpl for MockFS {
     let mut data_ptr = MaybeUninit::uninit();
     let mut data_len = MaybeUninit::uninit();
 
-    js_fs_read_to_string(
-      pathstr.as_ptr(),
-      pathstr.len(),
-      data_ptr.as_mut_ptr(),
-      data_len.as_mut_ptr(),
-    )
-    .then_some(())?;
-
     unsafe {
+      js_fs_read_to_string(
+        pathstr.as_ptr(),
+        pathstr.len(),
+        data_ptr.as_mut_ptr(),
+        data_len.as_mut_ptr(),
+      )
+      .then_some(())?;
+
+    
       let data = data_ptr.assume_init();
       let len = data_len.assume_init();
 

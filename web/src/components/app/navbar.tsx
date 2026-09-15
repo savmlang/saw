@@ -11,6 +11,7 @@ import { Spinner } from "#components/ui/spinner";
 import { Badge } from "#components/ui/badge";
 
 import { savmWasmRuntime, useWasmState } from "../../utils/wasm";
+import { LeafyGreenIcon } from "lucide-react";
 
 export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
   const status = useWasmState(savmWasmRuntime);
@@ -39,8 +40,9 @@ export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
       variant={"outline"}
     >
       {
-        status !== "running" &&
-        <Spinner className="size-4" />
+        status !== "running" ?
+          <Spinner className="size-4" /> :
+          <LeafyGreenIcon className="size-4 text-green-800 dark:text-green-500" />
       }
       {
         status === "running" ? "SaVM is running" : status[0].toUpperCase() + status.slice(1) + " SaVM"}
