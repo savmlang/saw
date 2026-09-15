@@ -5,7 +5,7 @@ import workerUri from "./savm/index?url"
 export type Status = "restarting" | "starting" | "error" | "running";
 
 export class WasmRuntime {
-  public worker: Worker = new Worker(workerUri, { type: "module" });
+  public worker: Worker = new Worker(workerUri, { type: "module", name: "ahqrtrt" });
 
   public status: Listenable<Status> = new Listenable("starting" as Status);
 
@@ -38,7 +38,7 @@ export class WasmRuntime {
               this.status.data = "restarting";
               this.worker.terminate();
 
-              this.worker = new Worker(workerUri, { type: "module" });
+              this.worker = new Worker(workerUri, { type: "module", name: "ahqrtrt" });
               resolve(null);
             }, 1000);
           }
@@ -75,9 +75,7 @@ export class Listenable<T> {
 
   register(cb: (v: T) => void): number {
     const idx = this.counter;
-
     this.events.set(idx, cb);
-
     this.counter++;
 
     return idx;
