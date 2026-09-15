@@ -123,7 +123,7 @@ pub extern "C" fn savm_vmstate_primed(state: *mut VMState) -> bool {
 pub extern "C" fn savm_get_tls_vmstate() {
   let vmstat = VMSTAT.with(|x| x.get());
 
-  js_cb_vmsate(vmstat);
+  unsafe { js_cb_vmsate(vmstat) };
 }
 
 #[no_mangle]

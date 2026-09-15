@@ -1,7 +1,8 @@
 use core::slice;
 use std::borrow::Cow;
-
 use sasm::PathInfo;
+
+use super::MockFS;
 
 #[no_mangle]
 pub extern "C" fn sasm_begin(
