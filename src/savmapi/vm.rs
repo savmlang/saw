@@ -17,8 +17,6 @@ pub type VMType = VM<VMResolver>;
 /// `sections_len`, `rodata_len`, and `rwdata_len` must correctly denote
 /// the number of elements/bytes valid at their respective root pointers.
 pub extern "C" fn savm_setup(
-  get_bytecode: BytecodeResolveFn,
-
   rodata_begin: *mut u8,
   rodata_len: usize,
 
@@ -48,7 +46,6 @@ pub extern "C" fn savm_setup(
   let data = VMResolver {
     cache: DashMap::with_capacity(capacity),
 
-    get_bytecode,
     rodata: super::ISlice {
       root: rodata_begin,
       len: rodata_len,
@@ -71,17 +68,19 @@ pub extern "C" fn savm_setup(
   Box::into_raw(Box::new(VM::new(data)))
 }
 
-pub type JSCbVMState = extern "C" fn(*mut VMState);
+extern "C" {
+  pub fn js_cb_vmsate(*mut VMState);
+}
 
 #[no_mangle]
 /// Executes a module and then gets the [VMState] that was used
-pub extern "C" fn savm_exec_module(vm: *mut VMType, sectionid: u64, cb: JSCbVMState) {
+pub extern "C" fn savm_exec_module(vm: *mut VMType, sectionid: u64) {
   unsafe {
     let vm = &(*vm);
 
     vm.dispatch_chocolate::<true>(sectionid);
 
-    savm_get_tls_vmstate(cb);
+    savm_get_tls_vmstate();
   }
 }
 
@@ -121,10 +120,10 @@ pub extern "C" fn savm_vmstate_primed(state: *mut VMState) -> bool {
 ///
 /// The [VMState] returned by [savm_exec_module] is guaranteed to be the exact
 /// [VMState] that executed the module.
-pub extern "C" fn savm_get_tls_vmstate(cb: JSCbVMState) {
+pub extern "C" fn savm_get_tls_vmstate() {
   let vmstat = VMSTAT.with(|x| x.get());
 
-  cb(vmstat);
+  js_cb_vmsate(vmstat);
 }
 
 #[no_mangle]

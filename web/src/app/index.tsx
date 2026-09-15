@@ -16,7 +16,7 @@ export default function App() {
     <NavBar shell={xterm} />
 
     <ResizablePanelGroup className="h-full w-full mx-8 mt-2">
-      <ResizablePanel minSize={"12rem"} defaultSize={"14rem"} maxSize={"18rem"} className="h-full bg-gray-300 dark:bg-card/90 rounded-md">
+      <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full bg-gray-300 dark:bg-card/90 rounded-md">
 
       </ResizablePanel>
 
@@ -28,7 +28,7 @@ export default function App() {
 
       <ResizableHandle withHandle className="mx-4" />
 
-      <ResizablePanel minSize={"40rem"} maxSize={"50%"} className="h-full bg-gray-300 dark:bg-card/90 rounded-md items-start text-start justify-start">
+      <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-gray-300 dark:bg-card/90 rounded-md items-start text-start justify-start">
         <Suspense
           fallback={
             <div className="h-full w-full flex flex-col justify-center items-center text-center">

@@ -15,38 +15,39 @@ pub struct FSEntry {
   pub path_len: usize,
 }
 
-pub type JSWrite =
-  extern "C" fn(path: *const u8, path_len: usize, content: *const u8, content_len: usize) -> bool;
+extern "C" {
+  pub fn js_fs_write(
+    path: *const u8,
+    path_len: usize,
+    content: *const u8,
+    content_len: usize,
+  ) -> bool;
 
-pub type JSMkDir = extern "C" fn(path: *const u8, path_len: usize) -> bool;
+  pub fn js_fs_mkdir(path: *const u8, path_len: usize) -> bool;
 
-pub type JSReadDir = extern "C" fn(
-  path: *const u8,
-  path_len: usize,
-  entries: *mut *mut FSEntry,
-  entries_len: *mut usize,
-) -> bool;
+  pub fn js_fs_readdir(
+    path: *const u8,
+    path_len: usize,
+    entries: *mut *mut FSEntry,
+    entries_len: *mut usize,
+  ) -> bool;
 
-pub type JsReadToString = extern "C" fn(
-  path: *const u8,
-  path_len: usize,
-  strpayload: *mut *mut u8,
-  strlen: *mut usize,
-) -> bool;
-
-pub struct MockFS {
-  pub write: JSWrite,
-  pub mkdir: JSMkDir,
-  pub readdir: JSReadDir,
-  pub read: JsReadToString,
+  pub fn js_fs_read_to_string(
+    path: *const u8,
+    path_len: usize,
+    strpayload: *mut *mut u8,
+    strlen: *mut usize,
+  ) -> bool;
 }
+
+pub struct MockFS;
 
 impl FileSystemImpl for MockFS {
   fn write<P: AsRef<std::path::Path>, C: AsRef<[u8]>>(&self, path: P, contents: C) -> Option<()> {
     let pathstr = path.as_ref().to_str()?;
     let contents = contents.as_ref();
 
-    (self.write)(
+    js_fs_write(
       pathstr.as_ptr(),
       pathstr.len(),
       contents.as_ptr(),
@@ -58,7 +59,7 @@ impl FileSystemImpl for MockFS {
   fn mkdir<P: AsRef<std::path::Path>>(&self, path: P) -> Option<()> {
     let pathstr = path.as_ref().to_str()?;
 
-    (self.mkdir)(pathstr.as_ptr(), pathstr.len()).then_some(())
+    js_fs_mkdir(pathstr.as_ptr(), pathstr.len()).then_some(())
   }
 
   fn readdir<P: AsRef<std::path::Path>, T, F>(&self, path: P, cb: F) -> T
@@ -72,7 +73,7 @@ impl FileSystemImpl for MockFS {
     let mut entries_ptr = MaybeUninit::uninit();
     let mut entries_len_ptr = MaybeUninit::uninit();
 
-    let Some(()) = (self.readdir)(
+    let Some(()) = js_fs_readdir(
       pathstr.as_ptr(),
       pathstr.len(),
       entries_ptr.as_mut_ptr(),
@@ -108,7 +109,7 @@ impl FileSystemImpl for MockFS {
     let mut data_ptr = MaybeUninit::uninit();
     let mut data_len = MaybeUninit::uninit();
 
-    (self.read)(
+    js_fs_read(
       pathstr.as_ptr(),
       pathstr.len(),
       data_ptr.as_mut_ptr(),

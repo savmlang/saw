@@ -9,7 +9,9 @@ use savm::{
 
 pub mod vm;
 
-pub type BytecodeResolveFn = extern "C" fn(u64, *mut *mut u8, *mut usize);
+extern "C" {
+  pub fn js_resolve_bytecode(u64, *mut *mut u8, *mut usize);
+}
 
 pub struct VMResolver {
   pub sections: ISlice<u64>,
@@ -19,8 +21,6 @@ pub struct VMResolver {
 
   pub pgo_critical: ISlice<u64>,
   pub pgo_priority: ISlice<u64>,
-
-  pub get_bytecode: BytecodeResolveFn,
 
   pub cache: DashMap<u64, CacheData>,
 }
@@ -84,7 +84,7 @@ impl BytecodeResolver for VMResolver {
     let mut len = MaybeUninit::<usize>::uninit();
 
     unsafe {
-      (self.get_bytecode)(section, ptr.as_mut_ptr(), len.as_mut_ptr());
+      js_resolve_bytecode(section, ptr.as_mut_ptr(), len.as_mut_ptr());
 
       let ptr = ptr.assume_init();
       let len = len.assume_init();

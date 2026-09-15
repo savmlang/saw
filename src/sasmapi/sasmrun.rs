@@ -12,11 +12,6 @@ pub extern "C" fn sasm_begin(
 
   distdir_data: *const u8,
   distdir_len: usize,
-
-  write: JSWrite,
-  mkdir: JSMkDir,
-  readdir: JSReadDir,
-  read: JsReadToString,
 ) {
   unsafe {
     let rt = PathInfo {
@@ -29,12 +24,7 @@ pub extern "C" fn sasm_begin(
         distdir_len,
       ))),
     };
-    let fs = MockFS {
-      mkdir,
-      readdir,
-      write,
-      read,
-    };
+    let fs = MockFS;
 
     sasm::sasm(rt, fs);
   }

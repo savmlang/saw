@@ -3,6 +3,7 @@ import sawJsUrl from "#wasm/saw.js?url";
 
 import createSawModule from "#wasm/saw.js";
 import type { RXMessage, TXMessage } from "../message";
+import { DeliveryVan } from "./queue";
 
 
 declare module "../../savm/saw.js" {
@@ -23,11 +24,12 @@ declare module "../../savm/saw.js" {
   ): Promise<MainModule>;
 }
 
-
 self.addEventListener('unhandledrejection', (event) => {
   event.preventDefault();
   throw event.reason;
 });
+
+const van = new DeliveryVan<TXMessage>();
 
 const startup = new Promise((resolve) => {
   self.onmessage = (msg: MessageEvent<TXMessage>) => {
@@ -41,6 +43,7 @@ const startup = new Promise((resolve) => {
         resolve(null);
         return
       default:
+        van.emit(ev);
         return;
     }
   }
@@ -51,6 +54,12 @@ const startup = new Promise((resolve) => {
   await startup;
 
   const module = await createSawModule({
+    print: (out: string) => {
+      const content = (new TextEncoder().encode(out)).buffer;
+
+      // @ts-ignore
+      self.postMessage({ type: "terminal.write", content } as RXMessage, [content]);
+    },
     locateFile(path) {
       if (path.endsWith(".wasm")) return wasmBinaryUrl;
       return path;
@@ -58,4 +67,7 @@ const startup = new Promise((resolve) => {
     mainScriptUrlOrBlob: sawJsUrl
   });
 
+  van.on((event) => {
+
+  });
 })()
