@@ -49,11 +49,7 @@ rustflags = [
   "-C",
   "link-arg=-sMAXIMUM_MEMORY=2147483648", # 2048 MB
   "-C",
-  "link-arg=-sWASM_BIGINT",
-  "-C",
-  "link-arg=-sABORTING_MALLOC=0",
-  "-C",
-  "link-arg=-fwasm-exceptions",
+  "link-arg=-sABORTING_MALLOC=1",
 
   # 7. Threading
   "-C",
