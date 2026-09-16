@@ -3,6 +3,8 @@ use std::{iter, mem::MaybeUninit, path::PathBuf, slice, str::FromStr};
 
 use sasm::{DirFsEntry, FileSystemImpl};
 
+use crate::sa_free;
+
 pub mod fsentry;
 pub mod sasmrun;
 
@@ -13,6 +15,13 @@ pub struct FSEntry {
 
   pub path: *const u8,
   pub path_len: usize,
+}
+
+impl FSEntry {
+  pub fn free(&self) {
+    sa_free(self.name as _);
+    sa_free(self.path as _);
+  }
 }
 
 extern "C" {
@@ -74,7 +83,7 @@ impl FileSystemImpl for MockFS {
 
     let mut entries_ptr = MaybeUninit::uninit();
     let mut entries_len_ptr = MaybeUninit::uninit();
-    
+
     unsafe {
       let Some(()) = js_fs_readdir(
         pathstr.as_ptr(),
@@ -91,14 +100,18 @@ impl FileSystemImpl for MockFS {
 
       let mut itr = slice::from_raw_parts(entries, entries_len)
         .into_iter()
-        .map(|x| DirFsEntry {
-          name: Box::from(str::from_utf8_unchecked(slice::from_raw_parts(
-            x.name, x.name_len,
-          ))),
-          path: PathBuf::from_str(str::from_utf8_unchecked(slice::from_raw_parts(
-            x.path, x.path_len,
-          )))
-          .unwrap_or_default(),
+        .map(|x| {
+          let val = DirFsEntry {
+            name: Box::from(str::from_utf8_unchecked(slice::from_raw_parts(
+              x.name, x.name_len,
+            ))),
+            path: PathBuf::from_str(str::from_utf8_unchecked(slice::from_raw_parts(
+              x.path, x.path_len,
+            )))
+            .unwrap_or_default(),
+          };
+          x.free();
+          val
         });
 
       return cb(&mut itr);
@@ -120,13 +133,14 @@ impl FileSystemImpl for MockFS {
       )
       .then_some(())?;
 
-    
       let data = data_ptr.assume_init();
       let len = data_len.assume_init();
 
-      Some(String::from_utf8_unchecked(Vec::from(
-        slice::from_raw_parts(data, len),
-      )))
+      let val = String::from_utf8_unchecked(Vec::from(slice::from_raw_parts(data, len)));
+
+      sa_free(data as _);
+
+      Some(val)
     }
   }
 }

@@ -9,11 +9,11 @@ use savm::{
 
 pub mod vm;
 
-extern "C" {
-  pub fn js_resolve_bytecode(sectionid: u64, bufptr: *mut *mut u8, buflen: *mut usize);
-}
+pub type JSResolveBytecode =
+  extern "C" fn(sectionid: u64, bufptr: *mut *mut u8, buflen: *mut usize);
 
 pub struct VMResolver {
+  pub resolve: JSResolveBytecode,
   pub sections: ISlice<u64>,
 
   pub rodata: ISlice<u8>,
@@ -84,7 +84,7 @@ impl BytecodeResolver for VMResolver {
     let mut len = MaybeUninit::<usize>::uninit();
 
     unsafe {
-      js_resolve_bytecode(section, ptr.as_mut_ptr(), len.as_mut_ptr());
+      (self.resolve)(section, ptr.as_mut_ptr(), len.as_mut_ptr());
 
       let ptr = ptr.assume_init();
       let len = len.assume_init();

@@ -17,7 +17,7 @@ export class Allocator {
 
   allocarray(arr: Uint8Array): Ptr<void> {
     const pt = this.alloc(arr.byteLength, 1);
-    this.module.writeArrayToMemory(pt, pt);
+    this.module.writeArrayToMemory(arr, pt);
 
     return pt;
   }
