@@ -42,6 +42,8 @@ jobs:
           cp ./target/wasm32-unknown-emscripten/release/saw.js .
           cp ./target/wasm32-unknown-emscripten/release/saw.wasm .
 
+          node patch.js
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
