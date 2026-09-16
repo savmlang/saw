@@ -1,5 +1,5 @@
 # SaVM Wasm
-src/savm/saw*
+public/savm/saw*
 
 # Logs
 logs

@@ -28,7 +28,7 @@ export default function App() {
 
       <ResizableHandle withHandle className="mx-4" />
 
-      <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-gray-300 dark:bg-card/90 rounded-md items-start text-start justify-start">
+      <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-black dark:bg-card/90 rounded-md items-start text-start justify-start p-4">
         <Suspense
           fallback={
             <div className="h-full w-full flex flex-col justify-center items-center text-center">

@@ -1,4 +1,4 @@
-import type { MainModule } from "#wasm/saw.js";
+import type { MainModule } from "../../../public/savm/saw";
 import { allocator } from "./allocator";
 
 export async function runSasm(

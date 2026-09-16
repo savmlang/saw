@@ -3,10 +3,11 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 
 import { defineConfig } from 'vite'
-import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/saw/",
+
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
@@ -22,4 +23,9 @@ export default defineConfig({
     },
   },
 
+  resolve: {
+    alias: {
+      "#wasm/*": "./src/savm/*"
+    }
+  }
 })

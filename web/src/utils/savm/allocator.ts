@@ -1,5 +1,5 @@
-import type { MainModule } from "#wasm/saw.js";
-import type { Ptr, usize } from "./fs";
+import type { MainModule } from "../../../public/savm/saw";
+import type { Ptr, usize } from "./core";
 
 export class Allocator {
   private module: MainModule = undefined as unknown as MainModule;

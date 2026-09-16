@@ -1,7 +1,7 @@
-import wasmBinaryUrl from "#wasm/saw.wasm?url";
-import sawJsUrl from "#wasm/saw.js?url";
+import wasmBinaryUrl from "../../../public/savm/saw.wasm?url";
+import sawJsUrl from "../../../public/savm/saw.js?url";
 
-import createSawModule from "#wasm/saw.js";
+import createSawModule from "../../../public/savm/saw.js";
 import { DeliveryVan } from "./queue";
 
 import type { RXMessage, TXMessage } from "../message";

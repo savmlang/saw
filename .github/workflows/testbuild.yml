@@ -10,6 +10,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      artifact-metadata: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -54,3 +58,59 @@ jobs:
             saw.d.ts
             saw.js
             saw.wasm
+
+  site:
+    name: Build Site
+
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    needs: [build]
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v7
+
+      - name: Setup
+        working-directory: web
+        run: |
+          cd public
+          mkdir savm
+
+      - name: Place SaVM WASM
+        uses: actions/download-artifact@v8
+        with:
+          skip-decompress: false
+          name: saw
+          path: ${{ github.workspace }}/web/public/savm/
+
+      - name: Install & Build
+        working-directory: web
+        run: |
+          npm i -g pnpm
+          pnpm install
+          pnpm build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "dist"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

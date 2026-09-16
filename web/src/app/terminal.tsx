@@ -2,7 +2,6 @@ import { Terminal } from "@xterm/xterm";
 
 import { FitAddon } from "@xterm/addon-fit";
 import { useEffect, useRef } from "react";
-import { getTheme, useTheme } from "../utils/theme";
 import { SaShell } from "../utils/sash";
 
 if (import.meta.hot) {
@@ -11,10 +10,10 @@ if (import.meta.hot) {
   });
 }
 
-const light = {
-  foreground: "black",
-  cursor: "black"
-};
+// const light = {
+//   foreground: "black",
+//   cursor: "black"
+// };
 
 const dark = {
   foreground: "white",
@@ -23,7 +22,6 @@ const dark = {
 
 export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaShell | null> }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const theme = useTheme();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -38,7 +36,7 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
       theme: {
         background: "transparent",
         ...(
-          getTheme() == "dark" ? dark : light
+          dark
         )
       }
     });
@@ -74,16 +72,5 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
     };
   }, [xterm]);
 
-  useEffect(() => {
-    if (xterm.current) {
-      xterm.current.term.options.theme = {
-        background: "transparent",
-        ...(
-          theme == "dark" ? dark : light
-        )
-      };
-    }
-  }, [xterm, theme]);
-
-  return <div id="xterm" ref={containerRef} className="w-full h-full p-4 overflow-hidden min-h-0 min-w-0"></div>;
+  return <div id="xterm" ref={containerRef} className="w-full h-full overflow-hidden min-h-0 min-w-0"></div>;
 }
