@@ -44,4 +44,6 @@ unsafe impl GlobalAlloc for SaAllocator {
   }
 }
 
-fn main() {}
+fn main() {
+  console::set_colors_enabled(true);
+}

@@ -5,7 +5,6 @@ import createSawModule from "#wasm/saw.js";
 import { DeliveryVan } from "./queue";
 
 import type { RXMessage, TXMessage } from "../message";
-import { js_fs_mkdir, js_fs_read, js_fs_readdir, js_fs_write } from "./fs";
 import { allocator } from "./allocator";
 import { runSasm } from "./sasm";
 
@@ -56,26 +55,9 @@ const module = await createSawModule({
     return path;
   },
   mainScriptUrlOrBlob: sawJsUrl,
-
-  imports: {
-    env: {
-      js_fs_write,
-      js_fs_mkdir,
-      js_fs_readdir,
-      js_fs_read
-    }
-  },
 });
 
 allocator.setModule(module);
-
-console.log("wasmMemory =", module.wasmMemory);
-console.log("buffer =", module.wasmMemory?.buffer);
-console.log("HEAPU8 =", module.HEAPU8);
-console.log("HEAPU8.length =", module.HEAPU8?.length);
-console.log("sa_malloc =", module._sa_malloc(8, 2));
-console.log("_malloc_size =", module._malloc_size(8));
-console.log("___libc_malloc =", module.___libc_malloc(8));
 
 van.on((event) => {
   procExecAsync(async () => {
@@ -100,5 +82,8 @@ async function procExecAsync<T>(
   }
   finally {
     allocator.unsafe_clear();
+    self.postMessage({
+      type: "process.exit"
+    } as RXMessage);
   }
 }
