@@ -83,12 +83,6 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v7
 
-      - name: Setup
-        working-directory: web
-        run: |
-          cd public
-          mkdir savm
-
       - name: Place SaVM WASM
         uses: actions/download-artifact@v8
         with:
