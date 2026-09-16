@@ -35,7 +35,7 @@ export class WasmRuntime {
               return;
             case "terminal.write":
               if (this.terminal) {
-                this.terminal.write(ev.content);
+                this.terminal.writeln(ev.content);
               }
               return;
             case "process.exit":
