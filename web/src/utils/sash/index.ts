@@ -2,6 +2,8 @@ import type { Terminal } from "@xterm/xterm";
 import { createColors } from "colorette"
 import { Prompt } from "./prompt";
 import { clear, help, notfound } from "./core";
+import { savmWasmRuntime } from "../wasm";
+import { sasm } from "./sasm";
 
 export const { green, underline, bold, dim, yellow, blue } = createColors({
   useColor: true,
@@ -23,6 +25,8 @@ export class SaShell {
     this.term.writeln(bold("This is a basic web shell"));
     this.term.writeln(`Run ${underline("help")} for a list of commands.`);
     this.term.writeln("");
+
+    savmWasmRuntime.attachTerminal(this.term);
 
     // The terminal keeps on receiving prompts!
     (async () => {
@@ -52,11 +56,13 @@ export class SaShell {
           return help;
         case "clear":
           return clear;
+        case "sasm":
+          return sasm;
         default:
           return notfound;
       }
     })();
-    f(prompt, args, term)
+    await f(prompt, args, term);
   }
 
 }

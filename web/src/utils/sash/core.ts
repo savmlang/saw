@@ -14,10 +14,13 @@ const helpData: {
   clear: {
     desc: "Clears the terminal screen",
     optional: "This command fully clears the terminal screen."
+  },
+  sasm: {
+    desc: "Runs the SaVM Assembler",
   }
 };
 
-export function help(_: string, args: string[], term: Terminal) {
+export async function help(_: string, args: string[], term: Terminal) {
   if (args.length > 1) {
     term.writeln([
       underline("help"),
@@ -72,7 +75,7 @@ export function help(_: string, args: string[], term: Terminal) {
     });
 }
 
-export function clear(_: string, args: string[], term: Terminal) {
+export async function clear(_: string, args: string[], term: Terminal) {
   if (args.length) {
     term.writeln([
       underline("clear"),
@@ -84,7 +87,7 @@ export function clear(_: string, args: string[], term: Terminal) {
   term.write("\x1b[2J\x1b[3J\x1b[H");
 }
 
-export function notfound(prompt: string, _: string[], term: Terminal) {
+export async function notfound(prompt: string, _: string[], term: Terminal) {
   term.writeln([
     underline(prompt),
     "is not a valid command. That's all we know."

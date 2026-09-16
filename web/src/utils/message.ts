@@ -12,7 +12,7 @@ export type RXMessage = {
   type: "started"
 } | {
   type: "terminal.write",
-  content: ArrayBuffer
+  content: Uint8Array
 } | {
   type: "process.exit",
 }

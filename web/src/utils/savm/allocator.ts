@@ -22,6 +22,13 @@ export class Allocator {
     return pt;
   }
 
+  allocString(data: string): { pt: Ptr<void>, len: number } {
+    const arr = new TextEncoder().encode(data);
+
+    const length = arr.byteLength;
+    return { pt: this.allocarray(arr), len: length };
+  }
+
   alloc(size: usize, align: usize): Ptr<void> {
     const alloc = this.module._sa_malloc(size, align) as Ptr<void>;
 

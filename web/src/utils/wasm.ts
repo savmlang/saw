@@ -1,16 +1,24 @@
 import { useCallback, useSyncExternalStore } from "react";
 import type { RXMessage, TXMessage } from "./message";
 import workerUri from "./savm/index?url"
+import type { Terminal } from "@xterm/xterm";
 
 export type Status = "restarting" | "starting" | "error" | "running";
 
 export class WasmRuntime {
-  public worker: Worker = new Worker(workerUri, { type: "module", name: "ahqrtrt" });
+  public worker: Worker = new Worker(workerUri, { type: "module" });
 
   public status: Listenable<Status> = new Listenable("starting" as Status);
 
+  private terminal: Terminal | undefined;
+  public procTerm: (() => void) | undefined;
+
   constructor() {
     this.runWorker();
+  }
+
+  attachTerminal(term: Terminal) {
+    this.terminal = term;
   }
 
   private runWorker() {
@@ -25,6 +33,17 @@ export class WasmRuntime {
             case "started":
               this.status.data = "running";
               return;
+            case "terminal.write":
+              if (this.terminal) {
+                this.terminal.write(ev.content);
+              }
+              return;
+            case "process.exit":
+              if (this.procTerm) {
+                this.procTerm();
+                this.procTerm = undefined;
+              }
+              return;
             default:
               return;
           }
@@ -34,19 +53,29 @@ export class WasmRuntime {
           this.worker.onerror = () => {
             this.status.data = "error";
 
+            if (this.procTerm) {
+              this.procTerm();
+              this.procTerm = undefined;
+            }
+
             setTimeout(() => {
+              console.log("Restarting");
               this.status.data = "restarting";
               this.worker.terminate();
 
-              this.worker = new Worker(workerUri, { type: "module", name: "ahqrtrt" });
+              this.worker = new Worker(workerUri, { type: "module" });
+
               resolve(null);
             }, 1000);
           }
         });
 
-        this.worker.postMessage({
-          type: "start"
-        } as TXMessage);
+        console.log("Sent Start Response");
+        setTimeout(() => {
+          this.worker.postMessage({
+            type: "start"
+          } as TXMessage);
+        }, 2000);
 
         await errPromise;
       }

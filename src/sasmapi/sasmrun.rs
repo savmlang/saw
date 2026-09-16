@@ -13,6 +13,7 @@ pub extern "C" fn sasm_begin(
   distdir_len: usize,
 ) {
   unsafe {
+    println!("We are starting sasm");
     let rt = PathInfo {
       bindir: Cow::Borrowed(str::from_utf8_unchecked(slice::from_raw_parts(
         bindir_data,

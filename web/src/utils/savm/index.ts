@@ -7,6 +7,7 @@ import { DeliveryVan } from "./queue";
 import type { RXMessage, TXMessage } from "../message";
 import { js_fs_mkdir, js_fs_read, js_fs_readdir, js_fs_write } from "./fs";
 import { allocator } from "./allocator";
+import { runSasm } from "./sasm";
 
 
 self.addEventListener('unhandledrejection', (event) => {
@@ -39,10 +40,16 @@ await startup;
 
 const module = await createSawModule({
   print: (out: string) => {
-    const content = (new TextEncoder().encode(out)).buffer;
+    const content = (new TextEncoder().encode(out));
 
     // @ts-ignore
-    self.postMessage({ type: "terminal.write", content } as RXMessage, [content]);
+    self.postMessage({ type: "terminal.write", content } as RXMessage, [content.buffer]);
+  },
+  printErr: (out: string) => {
+    const content = (new TextEncoder().encode(out));
+
+    // @ts-ignore
+    self.postMessage({ type: "terminal.write", content } as RXMessage, [content.buffer]);
   },
   locateFile(path: string) {
     if (path.endsWith(".wasm")) return wasmBinaryUrl;
@@ -50,14 +57,40 @@ const module = await createSawModule({
   },
   mainScriptUrlOrBlob: sawJsUrl,
 
-  js_fs_write,
-  js_fs_mkdir,
-  js_fs_readdir,
-  js_fs_read,
+  imports: {
+    env: {
+      js_fs_write,
+      js_fs_mkdir,
+      js_fs_readdir,
+      js_fs_read
+    }
+  },
 });
 
 allocator.setModule(module);
 
 van.on((event) => {
+  procExecAsync(async () => {
+    switch (event.type) {
+      case "start":
+        return
+      case "sasm":
+        await runSasm(module, event.binarydir, event.distdir);
+        break;
+      default:
+        break;
+    }
+  });
 
 });
+
+async function procExecAsync<T>(
+  cb: () => Promise<T>
+): Promise<T> {
+  try {
+    return await cb();
+  }
+  finally {
+    allocator.unsafe_clear();
+  }
+}
