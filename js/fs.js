@@ -1,5 +1,5 @@
-mergeInto(LibraryManager.library, {
-  async js_fs_write(path, path_len, content, content_len) {
+addToLibrary({
+  js_fs_write: async function (path, path_len, content, content_len) {
     const pathData = UTF8ToString(path, path_len, true);
     const data = HEAPU8.slice(content, content + content_len);
 
@@ -24,7 +24,7 @@ mergeInto(LibraryManager.library, {
     return output;
   },
 
-  async js_fs_mkdir(path, path_len) {
+  js_fs_mkdir: async function (path, path_len) {
     const pathData = UTF8ToString(path, path_len, true);
     /**
      * @type {FileSystemDirectoryHandle}
@@ -34,7 +34,7 @@ mergeInto(LibraryManager.library, {
     return true;
   },
 
-  async js_fs_readdir(path, path_len, entriesPtr, entries_len) {
+  js_fs_readdir: async function (path, path_len, entriesPtr, entries_len) {
     AHQRT_alloc.setup(Module, writeArrayToMemory);
 
     try {
@@ -65,7 +65,7 @@ mergeInto(LibraryManager.library, {
     }
   },
 
-  async js_fs_read(path, path_len, payload, len) {
+  js_fs_read: async function (path, path_len, payload, len) {
     AHQRT_alloc.setup(Module, writeArrayToMemory);
 
     const pathData = UTF8ToString(path, path_len, true);
