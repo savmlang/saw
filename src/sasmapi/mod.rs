@@ -32,11 +32,11 @@ extern "C" {
     entries_len: *mut usize,
   ) -> bool;
 
-  pub fn js_fs_read_to_string(
+  pub fn js_fs_read(
     path: *const u8,
     path_len: usize,
-    strpayload: *mut *mut u8,
-    strlen: *mut usize,
+    payload: *mut *mut u8,
+    len: *mut usize,
   ) -> bool;
 }
 
@@ -112,7 +112,7 @@ impl FileSystemImpl for MockFS {
     let mut data_len = MaybeUninit::uninit();
 
     unsafe {
-      js_fs_read_to_string(
+      js_fs_read(
         pathstr.as_ptr(),
         pathstr.len(),
         data_ptr.as_mut_ptr(),

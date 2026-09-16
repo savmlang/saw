@@ -115,7 +115,6 @@ export class Prompt {
       case "\x1b[D": // Left Arrow
         if (this.cursor > 0) {
           this.cursor--;
-          this.term.write("\x1b[1D");
         }
         this.repaintLine();
         break;
@@ -123,23 +122,18 @@ export class Prompt {
       case "\x1b[C": // Right Arrow
         if (this.cursor < this.buffer.length) {
           this.cursor++;
-          this.term.write("\x1b[1C");
         }
         this.repaintLine();
         break;
 
       case "\x1b[H": // Home
       case "\x1b[1~":
-        this.term.write("\x1b[2J\x1b[3J\x1b[H");
-
         this.cursor = 0;
         this.repaintLine();
         break;
 
       case "\x1b[F": // End
       case "\x1b[4~":
-        this.term.write("\x1b[2J\x1b[3J\x1b[H");
-
         this.cursor = this.buffer.length;
         this.repaintLine();
         break;
@@ -153,7 +147,6 @@ export class Prompt {
         break;
 
       case "\x1b[A": // Up Arrow
-        this.term.write("\x1b[B");
         if (this.history.length > 0 && this.historyIndex < this.history.length - 1) {
           this.historyIndex++;
           this.buffer = this.history[this.history.length - 1 - this.historyIndex];
@@ -164,7 +157,6 @@ export class Prompt {
         break;
 
       case "\x1b[B": // Down Arrow
-        this.term.write("\x1b[A");
         if (this.historyIndex > 0) {
           this.historyIndex--;
           this.buffer = this.history[this.history.length - 1 - this.historyIndex];

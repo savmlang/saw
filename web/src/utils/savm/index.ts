@@ -2,27 +2,12 @@ import wasmBinaryUrl from "#wasm/saw.wasm?url";
 import sawJsUrl from "#wasm/saw.js?url";
 
 import createSawModule from "#wasm/saw.js";
-import type { RXMessage, TXMessage } from "../message";
 import { DeliveryVan } from "./queue";
 
+import type { RXMessage, TXMessage } from "../message";
+import { js_fs_mkdir, js_fs_read, js_fs_readdir, js_fs_write } from "./fs";
+import { allocator } from "./allocator";
 
-declare module "../../savm/saw.js" {
-  export interface EmscriptenModuleOptions {
-    print?: (text: string) => void;
-    printErr?: (text: string) => void;
-    noInitialRun?: boolean;
-    noExitRuntime?: boolean;
-    arguments?: string[];
-    locateFile?: (url: string, scriptDirectory: string) => string;
-    onRuntimeInitialized?: () => void;
-    onAbort?: (what: any) => void;
-  }
-
-  // Overwrite the lazy (options?: unknown) signature
-  export default function MainModuleFactory(
-    options?: EmscriptenModuleOptions
-  ): Promise<MainModule>;
-}
 
 self.addEventListener('unhandledrejection', (event) => {
   event.preventDefault();
@@ -50,24 +35,29 @@ const startup = new Promise((resolve) => {
 });
 
 
-(async () => {
-  await startup;
+await startup;
 
-  const module = await createSawModule({
-    print: (out: string) => {
-      const content = (new TextEncoder().encode(out)).buffer;
+const module = await createSawModule({
+  print: (out: string) => {
+    const content = (new TextEncoder().encode(out)).buffer;
 
-      // @ts-ignore
-      self.postMessage({ type: "terminal.write", content } as RXMessage, [content]);
-    },
-    locateFile(path) {
-      if (path.endsWith(".wasm")) return wasmBinaryUrl;
-      return path;
-    },
-    mainScriptUrlOrBlob: sawJsUrl
-  });
+    // @ts-ignore
+    self.postMessage({ type: "terminal.write", content } as RXMessage, [content]);
+  },
+  locateFile(path: string) {
+    if (path.endsWith(".wasm")) return wasmBinaryUrl;
+    return path;
+  },
+  mainScriptUrlOrBlob: sawJsUrl,
 
-  van.on((event) => {
+  js_fs_write,
+  js_fs_mkdir,
+  js_fs_readdir,
+  js_fs_read,
+});
 
-  });
-})()
+allocator.setModule(module);
+
+van.on((event) => {
+
+});

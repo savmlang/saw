@@ -1,7 +1,9 @@
 export type TXMessage = {
   type: "start"
 } | {
-  type: "sasm"
+  type: "sasm",
+  binarydir: string,
+  distdir: string,
 } | {
   type: "savm"
 }
