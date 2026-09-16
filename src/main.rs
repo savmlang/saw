@@ -6,13 +6,7 @@ pub mod savmapi;
 
 #[no_mangle]
 extern "C" fn sa_malloc(size: usize, align: usize) -> *mut c_void {
-  unsafe {
-    if align == 1 {
-      // salloc uses libc under the hood
-      return libc::malloc(size);
-    }
-    salloc::aligned_malloc(size, align)
-  }
+  unsafe { salloc::aligned_malloc(size, align.max(4)) }
 }
 
 #[no_mangle]

@@ -73,7 +73,7 @@ console.log("wasmMemory =", module.wasmMemory);
 console.log("buffer =", module.wasmMemory?.buffer);
 console.log("HEAPU8 =", module.HEAPU8);
 console.log("HEAPU8.length =", module.HEAPU8?.length);
-console.log("sa_malloc =", module._sa_malloc(8, 0));
+console.log("sa_malloc =", module._sa_malloc(8, 2));
 console.log("_malloc_size =", module._malloc_size(8));
 console.log("___libc_malloc =", module.___libc_malloc(8));
 
