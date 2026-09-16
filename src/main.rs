@@ -6,7 +6,8 @@ pub mod savmapi;
 
 #[no_mangle]
 extern "C" fn sa_malloc(size: usize, align: usize) -> *mut c_void {
-  unsafe { salloc::aligned_malloc(size, align.max(4)) }
+  let align = align.max(4);
+  unsafe { salloc::aligned_malloc(size.next_multiple_of(align), align) }
 }
 
 #[no_mangle]
