@@ -34,56 +34,57 @@ const startup = new Promise((resolve) => {
   }
 });
 
+(async () => {
+  await startup;
 
-await startup;
+  const module = await createSawModule({
+    print: (out: string) => {
+      const content = (new TextEncoder().encode(out));
 
-const module = await createSawModule({
-  print: (out: string) => {
-    const content = (new TextEncoder().encode(out));
+      // @ts-ignore
+      self.postMessage({ type: "terminal.write", content } as RXMessage, [content.buffer]);
+    },
+    printErr: (out: string) => {
+      const content = (new TextEncoder().encode(out));
 
-    // @ts-ignore
-    self.postMessage({ type: "terminal.write", content } as RXMessage, [content.buffer]);
-  },
-  printErr: (out: string) => {
-    const content = (new TextEncoder().encode(out));
-
-    // @ts-ignore
-    self.postMessage({ type: "terminal.write", content } as RXMessage, [content.buffer]);
-  },
-  locateFile(path: string) {
-    if (path.endsWith(".wasm")) return wasmBinaryUrl;
-    return path;
-  },
-  mainScriptUrlOrBlob: sawJsUrl,
-});
-
-allocator.setModule(module);
-
-van.on((event) => {
-  procExecAsync(async () => {
-    switch (event.type) {
-      case "start":
-        return
-      case "sasm":
-        await runSasm(module, event.binarydir, event.distdir);
-        break;
-      default:
-        break;
-    }
+      // @ts-ignore
+      self.postMessage({ type: "terminal.write", content } as RXMessage, [content.buffer]);
+    },
+    locateFile(path: string) {
+      if (path.endsWith(".wasm")) return wasmBinaryUrl;
+      return path;
+    },
+    mainScriptUrlOrBlob: sawJsUrl,
   });
 
-});
+  allocator.setModule(module);
 
-async function procExecAsync<T>(
-  cb: () => Promise<T>
-): Promise<T> {
-  try {
-    return await cb();
+  van.on((event) => {
+    procExecAsync(async () => {
+      switch (event.type) {
+        case "start":
+          return
+        case "sasm":
+          await runSasm(module, event.binarydir, event.distdir);
+          break;
+        default:
+          break;
+      }
+    });
+
+  });
+
+  async function procExecAsync<T>(
+    cb: () => Promise<T>
+  ): Promise<T> {
+    try {
+      return await cb();
+    }
+    finally {
+      allocator.unsafe_clear();
+      self.postMessage({
+        type: "process.exit"
+      } as RXMessage);
+    }
   }
-  finally {
-    allocator.unsafe_clear();
-    self.postMessage({
-      type: "process.exit"
-    } as RXMessage);
-  }
-}
+})();

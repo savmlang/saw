@@ -1,12 +1,13 @@
 import { useCallback, useSyncExternalStore } from "react";
 import type { RXMessage, TXMessage } from "./message";
-import workerUri from "./savm/index?url"
 import type { Terminal } from "@xterm/xterm";
+
+import RTWorker from "./savm/index.ts?worker"
 
 export type Status = "restarting" | "starting" | "error" | "running";
 
 export class WasmRuntime {
-  public worker: Worker = new Worker(workerUri, { type: "module" });
+  public worker: Worker = new RTWorker();
 
   public status: Listenable<Status> = new Listenable("starting" as Status);
 
@@ -63,7 +64,7 @@ export class WasmRuntime {
               this.status.data = "restarting";
               this.worker.terminate();
 
-              this.worker = new Worker(workerUri, { type: "module" });
+              this.worker = new RTWorker();
 
               resolve(null);
             }, 1000);

@@ -144,3 +144,8 @@
   background: transparent !important;
   scrollbar-width: none;
 }
+
+#xterm > div > div.xterm-scrollable-element > div.scrollbar,
+#xterm > div > div.xterm-scrollable-element > div.scrollbar > div {
+  @apply rounded-xl! w-2!;
+}
