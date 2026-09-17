@@ -149,3 +149,28 @@
 #xterm > div > div.xterm-scrollable-element > div.scrollbar > div {
   @apply rounded-xl! w-2!;
 }
+
+.monaco-editor .monaco-scrollable-element > .scrollbar.vertical,
+.monaco-editor .monaco-scrollable-element > .scrollbar.horizontal {
+  background: transparent !important;
+}
+
+.monaco-editor .decorationsOverviewRuler {
+  display: none !important;
+}
+
+.scrollbar-small::-webkit-scrollbar {
+  @apply transition-colors! h-2! mb-2!;
+}
+
+.scrollbar-small::-webkit-scrollbar-track {
+  @apply bg-transparent rounded-xl mx-1 h-1!;
+}
+
+.scrollbar-small::-webkit-scrollbar-thumb {
+  @apply transition-colors! bg-accent-foreground/30 rounded-md h-0.75!;
+}
+
+.scrollbar-small::-webkit-scrollbar-thumb:hover {
+  @apply transition-colors! bg-accent-foreground/70 h-0.75!;
+}

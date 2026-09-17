@@ -2,10 +2,11 @@ import { Spinner } from "#components/ui/spinner";
 import small from "../assets/small.svg";
 
 export default function Editor({ loading }: { loading: boolean }) {
-  return <div className="w-full h-full flex flex-col justify-center text-center items-center select-none">
+  return <div className="w-full h-full flex flex-col bg-gray-300 dark:bg-card/90 rounded-md justify-center text-center items-center select-none">
     <img
       src={small}
       className="size-48 dark:invert opacity-70 dark:opacity-50"
+      alt="SaVM Lightning Bolt Icon"
     />
 
     <h1 className="text-accent-foreground mt-4 select-none">SaVM Interactive Playground</h1>
