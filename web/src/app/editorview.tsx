@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import Editor from "./editor"
-
 import { editor } from "monaco-editor"
 import { useTheme } from "../utils/theme";
+import { Separator } from "#components/ui/separator";
+
+import Editor from "./editor"
 
 import "../utils/editor/offload";
-import { Separator } from "#components/ui/separator";
 
 editor.defineTheme('dark', {
   base: 'vs-dark', // can be 'vs', 'vs-dark', or 'hc-black'

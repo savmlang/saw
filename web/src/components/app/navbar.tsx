@@ -12,6 +12,7 @@ import { Badge } from "#components/ui/badge";
 
 import { savmWasmRuntime, useWasmState } from "../../utils/wasm";
 import { LeafyGreenIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "#components/ui/tooltip";
 
 export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
   const status = useWasmState(savmWasmRuntime);
@@ -30,6 +31,7 @@ export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
       <Button
         className={"size-10"}
         variant={"secondary"}
+        aria-label="More Options"
       >
         <BsThreeDots />
       </Button>
@@ -59,11 +61,20 @@ export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
       Theme
     </Button>
 
-    <Button
-      className={"size-10"}
-      variant={"outline"}
-    >
-      <CiCircleQuestion className="size-6" />
-    </Button>
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            className={"size-10"}
+            variant={"outline"}
+            aria-label="Help"
+          >
+            <CiCircleQuestion className="size-6" />
+          </Button>
+        }
+      />
+      <TooltipContent>Help</TooltipContent>
+    </Tooltip>
+
   </div>;
 }

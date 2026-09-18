@@ -1,5 +1,7 @@
 import editorWorker from 'monaco-editor/editor/editor.worker.js?worker';
 
+console.debug("[OFFLOAD]: Monaco Offload has instantiated");
+
 // For Vite or bundlers supporting ?worker imports:
 self.MonacoEnvironment = {
   async getWorker(_: unknown, label: string) {
