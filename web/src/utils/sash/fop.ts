@@ -1,7 +1,7 @@
 import type { Terminal } from "@xterm/xterm";
 import { bold, type Context } from ".";
 
-import { requestLs, requestRm } from "../fsService";
+import { requestLs, requestMkdir, requestRm } from "../fsService";
 import type { Entries } from "../fs/types";
 
 export async function ls({ shell }: Context, args: string[], term: Terminal) {
@@ -53,25 +53,90 @@ export async function ls({ shell }: Context, args: string[], term: Terminal) {
 }
 
 export async function rm({ shell }: Context, args: string[], term: Terminal) {
-  if (args.length < 1 || args.length > 2) {
+  const targets = args.filter((a) => !a.startsWith("-"));
+  const flags = new Set(args.filter((a) => a.startsWith("-")));
+
+  if (targets.length === 0) {
     term.writeln([
       bold("rm"),
-      "only expects at most",
-      bold("2"),
-      "arguments and at least",
+      "expects at least",
       bold("1"),
-      "argument. Found ",
-      bold(args.length.toString()),
+      "target operand",
     ].join(" "));
     return;
   }
 
-  const dir = args[0];
-  const rf = args[1] == "-rf";
+  // to OPFS all are same
+  const rf = flags.has("-rf") || flags.has("-r") || flags.has("-f");
 
-  try {
-    await requestRm(shell.cwd, dir, rf);
-  } catch (e) {
-    term.writeln(String(e));
+  const matcher = /^[A-Za-z0-9.]*$/;
+
+  for (const dir of targets) {
+    try {
+      const dirName = dir;
+      if (/^\.*$/.test(dirName)) {
+        term.writeln([
+          bold("Forbidden"),
+          "character:",
+          bold(dirName),
+        ].join(" "));
+        return;
+      }
+
+      if (!matcher.test(dirName)) {
+        term.writeln([
+          bold("Invalid"),
+          "dirname: ",
+          bold(dirName),
+        ].join(" "));
+        return;
+      }
+
+      await requestRm(shell.cwd, dir, rf);
+    } catch (e) {
+      term.writeln(String(e));
+      return;
+    }
+  }
+}
+
+export async function mkdir({ shell }: Context, args: string[], term: Terminal) {
+  if (args.length == 0) {
+    term.writeln([
+      bold("mkdir"),
+      "expects atleast",
+      bold("1"),
+      "argument.",
+    ].join(" "));
+    return;
+  }
+
+  const matcher = /^[A-Za-z0-9.]*$/;
+
+  for (const dirName of args) {
+    if (/^\.*$/.test(dirName)) {
+      term.writeln([
+        bold("Forbidden"),
+        "character:",
+        bold(dirName),
+      ].join(" "));
+      return;
+    }
+
+    if (!matcher.test(dirName)) {
+      term.writeln([
+        bold("Invalid"),
+        "dirname: ",
+        bold(dirName),
+      ].join(" "));
+      return;
+    }
+
+    try {
+      await requestMkdir(shell.cwd, dirName);
+    } catch (e) {
+      term.writeln(String(e));
+      return
+    }
   }
 }

@@ -4,7 +4,7 @@ import { Prompt } from "./prompt";
 import { cd, clear, cwd, help, notfound, pwd } from "./core";
 import { savmWasmRuntime } from "../wasm";
 import { sasm } from "./sasm";
-import { ls, rm } from "./fop";
+import { ls, mkdir, rm } from "./fop";
 
 export const { green, underline, bold, dim, yellow, blue } = createColors({
   useColor: true,
@@ -101,6 +101,8 @@ export class SaShell {
           return ls;
         case "rm":
           return rm;
+        case "mkdir":
+          return mkdir;
         case "sasm":
           return sasm;
         default:

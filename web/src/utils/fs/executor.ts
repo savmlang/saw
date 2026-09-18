@@ -36,6 +36,12 @@ export const commandHandlers: CommandHandlers = {
       exists = false;
     }
     return { exists };
+  },
+
+  async mkdir(data) {
+    const dir = await dirHandle(data.dir, true);
+
+    await dir.getDirectoryHandle(data.dirName, { create: true });
   }
 };
 

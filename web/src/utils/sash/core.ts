@@ -26,8 +26,12 @@ const helpData: {
     optional: "`ls [regexp] [flags]` will only list the items in the directory listing (depth limited to 1 only) only matching the regexp (and optionally regexp flags)."
   },
   rm: {
-    desc: "rm <dir> [-rf] a directory",
-    optional: "`rm <dir> -rf` clears also children while `rm` clears only empty directories. None of the two error."
+    desc: "rm [...paths]. `-rf` for directory",
+    optional: "`rm <...dirs> -rf` clears also children while `rm` clears only empty directories. None of the two error."
+  },
+  mkdir: {
+    desc: "creates the directory",
+    optional: "`mkdir <...names>` creates multiple directories simultaneously"
   },
   clear: {
     desc: "Clears the terminal screen",
@@ -65,7 +69,7 @@ export async function help(_: Context, args: string[], term: Terminal) {
     }
 
     term.writeln(
-      `${underline("Command")}: name`
+      `${underline("Command")}: ${name}`
     );
     term.writeln(
       `${entry.desc}\r\n${entry.optional || ""}`

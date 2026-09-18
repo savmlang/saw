@@ -7,22 +7,18 @@ export type Entries = Entry[];
 
 export type CbFn = (entry: Entries) => void;
 
-/**
- * Mapping of command names to their input payload shapes.
- */
 export interface CmdPayloadMap {
   ls: { dir: string };
   rm: { dir: string; toRemove: string; rf: boolean };
   dirExists: { dir: string };
+  mkdir: { dir: string; dirName: string; };
 }
 
-/**
- * Mapping of command names to their output result shapes.
- */
 export interface CmdResultMap {
   ls: { entries: Entries };
   rm: void;
   dirExists: { exists: boolean };
+  mkdir: void;
 }
 
 export type CmdName = keyof CmdPayloadMap;
@@ -58,8 +54,8 @@ export type ErrResponse = {
 
 export type OutResponse<K extends CmdName = CmdName> = K extends CmdName
   ? CmdResultMap[K] extends void
-    ? { type: "out"; cmd: K; token: number }
-    : { type: "out"; cmd: K; token: number } & CmdResultMap[K]
+  ? { type: "out"; cmd: K; token: number }
+  : { type: "out"; cmd: K; token: number } & CmdResultMap[K]
   : never;
 
 export type Response = WatchResponse | ErrResponse | OutResponse;

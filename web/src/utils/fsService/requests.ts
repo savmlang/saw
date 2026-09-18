@@ -50,3 +50,17 @@ export async function requestLs(dir: string): Promise<Entries> {
     }
   );
 }
+
+export async function requestMkdir(dir: string, dirName: string): Promise<void> {
+  return sendWorkerCmd<void>({
+    type: "cmd",
+    cmd: "mkdir",
+    dir,
+    dirName,
+    token: 0
+  }, (out, resolve) => {
+    if (out.type === "out" && out.cmd === "mkdir") {
+      resolve();
+    }
+  });
+}
