@@ -13,6 +13,7 @@ export default function FileViewer() {
             <Button
               size={"icon-xs"}
               variant={"outline"}
+              aria-label="New File"
             >
               <FilePlus />
             </Button>
@@ -29,6 +30,7 @@ export default function FileViewer() {
             <Button
               size={"icon-xs"}
               variant={"outline"}
+              aria-label="New Folder"
             >
               <FolderPlus />
             </Button>

@@ -31,13 +31,16 @@ export default function EnhancedEditorView() {
   }, [theme]);
 
   useEffect(() => {
-    editorObj.current = editor.create(editorDiv.current!, {
-      automaticLayout: true,
-      wordWrap: "on",
-      model: null,
+    const hwnd = requestIdleCallback(() => {
+      editorObj.current = editor.create(editorDiv.current!, {
+        automaticLayout: true,
+        wordWrap: "on",
+        model: null,
+      });
     });
 
     return () => {
+      cancelIdleCallback(hwnd);
       editorObj.current?.dispose();
     }
   }, []);
