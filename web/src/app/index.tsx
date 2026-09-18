@@ -1,13 +1,12 @@
 import { NavBar } from "#components/app/navbar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "#components/ui/resizable";
 import { lazy, Suspense, useRef } from "react";
+import { Spinner } from "#components/ui/spinner";
 
 import type { SaShell } from "../utils/sash";
 
-import { Spinner } from "#components/ui/spinner";
 import Editor from "./editor";
 import FileViewerSplash from "./files/splash";
-import { LazySuspense } from "#components/app/lazysuspense";
 
 const TerminalView = lazy(() => import("./terminal"));
 const EnhancedEditorView = lazy(() => import("./editorview"));
@@ -21,7 +20,7 @@ export default function App() {
 
     <ResizablePanelGroup className="h-full w-full mx-8 mt-2">
       <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full bg-gray-300 dark:bg-card/90 rounded-md overflow-none">
-              <Suspense
+        <Suspense
           fallback={
             <FileViewerSplash />
           }>
@@ -32,13 +31,12 @@ export default function App() {
       <ResizableHandle withHandle className="mx-2" />
 
       <ResizablePanel defaultSize={"75%"} className="h-full rounded-md flex">
-        <LazySuspense
+        <Suspense
           fallback={
-           <Editor loading /> 
-          }
-        >
+            <Editor loading />
+          }>
           <EnhancedEditorView />
-        </LazySuspense>
+        </Suspense>
       </ResizablePanel>
 
       <ResizableHandle withHandle className="mx-2" />
