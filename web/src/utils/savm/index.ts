@@ -1,10 +1,10 @@
 import wasmBinaryUrl from "../../../public/savm/saw.wasm?url";
 import sawJsUrl from "../../../public/savm/saw.js?url";
-
 import createSawModule from "../../../public/savm/saw.js";
-import { DeliveryVan } from "./queue";
 
 import type { RXMessage, TXMessage } from "../message";
+
+import { DeliveryVan } from "./queue";
 import { allocator } from "./allocator";
 import { runSasm } from "./sasm";
 
