@@ -1,8 +1,9 @@
 import { Button } from "#components/ui/button";
+import { Skeleton } from "#components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "#components/ui/tooltip";
 import { FilePlus, FolderPlus } from "lucide-react";
 
-export default function FileViewer() {
+export default function FileViewerSplash() {
   return <div className="w-full h-full flex flex-col justify-start text-start items-start p-2">
     <div className="w-full text-sm text-foreground flex items-center justify-center gap-1">
       <span className="my-auto mr-auto">Files</span>
@@ -13,6 +14,8 @@ export default function FileViewer() {
             <Button
               size={"icon-xs"}
               variant={"outline"}
+              aria-label="New File"
+              disabled
             >
               <FilePlus />
             </Button>
@@ -29,6 +32,8 @@ export default function FileViewer() {
             <Button
               size={"icon-xs"}
               variant={"outline"}
+              disabled
+              aria-label="New Folder"
             >
               <FolderPlus />
             </Button>
@@ -39,5 +44,9 @@ export default function FileViewer() {
         </TooltipContent>
       </Tooltip>
     </div>
+
+    <Skeleton
+      className="w-full h-full mt-3"
+    />
   </div>;
 }

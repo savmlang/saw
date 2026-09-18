@@ -23,7 +23,7 @@ export default function EnhancedEditorView() {
   const editorDiv = useRef<HTMLDivElement>(null);
   const editorObj = useRef<editor.IStandaloneCodeEditor>(undefined);
 
-  const [models] = useState(["a"]);
+  const [models] = useState([]);
 
   const theme = useTheme();
   useEffect(() => {
@@ -34,8 +34,7 @@ export default function EnhancedEditorView() {
     editorObj.current = editor.create(editorDiv.current!, {
       automaticLayout: true,
       wordWrap: "on",
-      language: "javascript",
-      // model: null,
+      model: null,
     });
 
     return () => {
