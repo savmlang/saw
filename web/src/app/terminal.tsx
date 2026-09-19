@@ -1,10 +1,10 @@
-import { Terminal } from "@xterm/xterm";
-import { Unicode11Addon } from '@xterm/addon-unicode11';
-import { CanvasAddon } from '@xterm/addon-canvas';
-import { FitAddon } from "@xterm/addon-fit";
-
 import { useEffect, useRef } from "react";
 import { SaShell } from "../utils/sash";
+
+import type { Terminal } from "@xterm/xterm";
+import type { FitAddon } from "@xterm/addon-fit";
+import type { CanvasAddon } from "@xterm/addon-canvas";
+import type { Unicode11Addon } from "@xterm/addon-unicode11";
 
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
@@ -25,71 +25,101 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
 
     containerRef.current.innerHTML = "";
 
-    const term = new Terminal({
-      fontFamily: [
-        'Menlo',
-        'Monaco',
-        'Consolas',
-        '"Liberation Mono"',
-        '"Courier New"',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Noto Color Emoji"',
-        'monospace'
-      ].join(', '),
-      lineHeight: 1.2,
-      cursorBlink: true,
-      fontSize: 14,
+    const view = containerRef.current;
 
-      allowProposedApi: true,
-      allowTransparency: true,
+    let mounted = true;
 
-      theme: {
-        background: "transparent",
-        ...(
-          dark
-        )
-      }
-    });
-    const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
+    let term: Terminal | undefined;
+    let fitAddon: FitAddon | undefined;
+    let canvasAddon: CanvasAddon | undefined;
+    let uc11: Unicode11Addon | undefined;
+    let resizeObserver: ResizeObserver | undefined;
+    let sashell: SaShell | undefined;
+    (async () => {
+      const [
+        { Terminal },
+        { FitAddon },
+        { CanvasAddon },
+        { Unicode11Addon },
+      ] = await Promise.all([
+        import("@xterm/xterm"),
+        import("@xterm/addon-fit"),
+        import("@xterm/addon-canvas"),
+        import("@xterm/addon-unicode11"),
+        import("@xterm/xterm/css/xterm.css"),
+      ]);
 
-    const canvasAddon = new CanvasAddon();
-    term.loadAddon(canvasAddon);
+      if (mounted) term = new Terminal({
+        fontFamily: [
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          '"Liberation Mono"',
+          '"Courier New"',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Noto Color Emoji"',
+          'monospace'
+        ].join(', '),
+        lineHeight: 1.2,
+        cursorBlink: true,
+        fontSize: 14,
 
-    const uc11 = new Unicode11Addon();
-    term.loadAddon(uc11);
+        allowProposedApi: true,
+        allowTransparency: true,
 
-    term.unicode.activeVersion = '11';
+        theme: {
+          background: "transparent",
+          ...(
+            dark
+          )
+        }
+      });
 
-    term.open(containerRef.current);
+      if (mounted) fitAddon = new FitAddon();
+      if (mounted) await scheduler.yield();
+      if (mounted) canvasAddon = new CanvasAddon();
+      if (mounted) uc11 = new Unicode11Addon();
 
-    requestAnimationFrame(() => {
-      fitAddon.fit();
-    });
+      if (mounted) term!.loadAddon(fitAddon!);
+      if (mounted) term!.loadAddon(canvasAddon!);
+      if (mounted) term!.loadAddon(uc11!);
 
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        containerRef.current &&
-        containerRef.current.clientWidth > 0 &&
-        containerRef.current.clientHeight > 0
-      ) {
-        fitAddon.fit();
-      }
-    });
+      if (mounted) await scheduler.yield();
+      if (mounted) term!.unicode.activeVersion = '11';
+      if (mounted) term!.open(view);
 
-    resizeObserver.observe(containerRef.current);
-    const sashell = new SaShell(term);
+      if (mounted) requestAnimationFrame(() => {
+        fitAddon!.fit();
+      });
 
-    xterm.current = sashell;
+      if (mounted) resizeObserver = new ResizeObserver(() => {
+        if (
+          containerRef.current &&
+          containerRef.current.clientWidth > 0 &&
+          containerRef.current.clientHeight > 0
+        ) {
+          fitAddon!.fit();
+        }
+      });
 
-    sashell.launch();
+      if (mounted) resizeObserver!.observe(view);
+      if (mounted) sashell = new SaShell(term!);
+
+      if (mounted) xterm.current = sashell!;
+
+      if (mounted) sashell!.launch();
+    })();
 
     return () => {
-      resizeObserver.disconnect();
-      uc11.dispose();
-      canvasAddon.dispose();
-      term.dispose();
+      mounted = false;
+
+      resizeObserver?.disconnect();
+      uc11?.dispose();
+      canvasAddon?.dispose();
+
+      term?.dispose();
+
       xterm.current = null;
     };
   }, [xterm]);
