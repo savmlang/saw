@@ -1,7 +1,7 @@
 import type { Terminal } from "@xterm/xterm";
 import { bold, type Context } from ".";
 
-import { requestLs, requestMkdir, requestRm } from "../fsService";
+import { requestLs, requestMkdir, requestRm, requestTouch } from "../fsService";
 import type { Entries } from "../fs/types";
 
 export async function ls({ shell }: Context, args: string[], term: Terminal) {
@@ -134,6 +134,46 @@ export async function mkdir({ shell }: Context, args: string[], term: Terminal) 
 
     try {
       await requestMkdir(shell.cwd, dirName);
+    } catch (e) {
+      term.writeln(String(e));
+      return
+    }
+  }
+}
+export async function touch({ shell }: Context, args: string[], term: Terminal) {
+  if (args.length == 0) {
+    term.writeln([
+      bold("mkdir"),
+      "expects atleast",
+      bold("1"),
+      "argument.",
+    ].join(" "));
+    return;
+  }
+
+  const matcher = /^[A-Za-z0-9.]*$/;
+
+  for (const dirName of args) {
+    if (/^\.*$/.test(dirName)) {
+      term.writeln([
+        bold("Forbidden"),
+        "character:",
+        bold(dirName),
+      ].join(" "));
+      return;
+    }
+
+    if (!matcher.test(dirName)) {
+      term.writeln([
+        bold("Invalid"),
+        "dirname: ",
+        bold(dirName),
+      ].join(" "));
+      return;
+    }
+
+    try {
+      await requestTouch(shell.cwd, dirName);
     } catch (e) {
       term.writeln(String(e));
       return

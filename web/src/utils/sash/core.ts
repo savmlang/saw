@@ -33,6 +33,10 @@ const helpData: {
     desc: "creates the directory",
     optional: "`mkdir <...names>` creates multiple directories simultaneously"
   },
+  touch: {
+    desc: "Creates an empty file, or does nothing.",
+    optional: "`touch <...names>` creates multiple files simultaneously"
+  },
   clear: {
     desc: "Clears the terminal screen",
     optional: "This command fully clears the terminal screen."
