@@ -17,7 +17,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "#components/ui/tooltip"
 export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
   const status = useWasmState(savmWasmRuntime);
 
-  return <div className="w-full mx-8 p-2 h-14 flex gap-2 bg-gray-300 dark:bg-card/90 rounded-md">
+  return <div className="w-full mx-8 p-2 h-14 flex gap-2 border border-border bg-accent dark:bg-card/90 rounded-md">
     <ButtonGroup>
       <Button
         className={"h-10 w-24"}

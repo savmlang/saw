@@ -1,0 +1,46 @@
+import type { FileKind } from "./types";
+
+import { ChevronRight } from "lucide-react";
+
+import { LuBinary } from "react-icons/lu";
+import { FcFolder, FcOpenedFolder } from "react-icons/fc";
+import { BsTypescript, BsJavascript, BsFileEarmarkBinaryFill, BsFileEarmarkFill, BsFileEarmarkTextFill } from "react-icons/bs";
+
+import { useMemo, type ComponentPropsWithoutRef } from "react";
+import { Spinner } from "#components/ui/spinner";
+
+export function FileEntry({ name, kind, loading, expanded, ...props }: ComponentPropsWithoutRef<'button'> & { loading: boolean, name: string, kind: FileKind, expanded?: boolean }) {
+  const IconData = useMemo(() => Icon({ kind, expanded }), [kind, expanded]);
+
+  return <button {...props} className="cursor-pointer h-6 max-h-6 text-xs rounded-md w-full hover:bg-border/80 dark:hover:bg-border flex text-center items-center px-1 gap-0.5">
+    {
+      loading ?
+        <Spinner className="size-3 mx-0.5" />
+        :
+        kind == 'dir' ? <ChevronRight className={`size-4 transition-all ${expanded ? "rotate-90" : ""}`} /> : <div className="w-4" />
+    }
+
+    <section className="mr-1">{IconData}</section>
+
+    <span>{name.length > 24 ? name.substring(0, 21) + "..." : name}</span>
+  </button>
+}
+
+function Icon({ kind, expanded }: { kind: FileKind, expanded?: boolean }) {
+  switch (kind) {
+    case "dir":
+      return expanded ? <FcOpenedFolder className="size-4" /> : <FcFolder className="size-4" />;
+    case "bin":
+      return <LuBinary className="p-[0.5px] rounded-sm border border-red-800 dark:border-red-400 size-4 text-red-800 dark:text-red-400" />
+    case "sasm":
+      return <BsFileEarmarkBinaryFill className="size-4 text-red-800 dark:text-red-400" />
+    case "textfile":
+      return <BsFileEarmarkTextFill className="size-4 text-zinc-500 dark:text-inherit" />;
+    case "js":
+      return <BsJavascript className="size-4 rounded-xs text-yellow-600 dark:text-[#F7DF1E]" />;
+    case "ts":
+      return <BsTypescript className="size-4 rounded-xs text-[#3178C6]" />;
+    default:
+      return <BsFileEarmarkFill className="size-4 text-zinc-500 dark:text-inherit" />;
+  }
+}

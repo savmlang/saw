@@ -114,6 +114,8 @@ impl FileSystemImpl for MockFS {
           val
         });
 
+      fsentry::fs_entries_free(entries);
+
       return cb(&mut itr);
     }
   }

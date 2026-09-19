@@ -26,6 +26,8 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
   useEffect(() => {
     if (!containerRef.current) return;
 
+    containerRef.current.innerHTML = "";
+
     const term = new Terminal({
       cursorBlink: true,
       fontFamily: "monospace",

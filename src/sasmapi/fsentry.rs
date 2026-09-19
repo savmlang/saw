@@ -10,6 +10,10 @@ pub extern "C" fn fs_entries_alloc(total: usize) -> *mut FSEntry {
 #[no_mangle]
 pub extern "C" fn fs_entries_free(ptr: *mut FSEntry) {
   unsafe {
+    if ptr.is_null() {
+      return;
+    }
+    
     salloc::aligned_free(ptr as _);
   }
 }

@@ -38,7 +38,11 @@ export type UnregisterMessage = {
   hwnd: number;
 };
 
-export type Message = RegisterMessage | UnregisterMessage | CmdMessage;
+export type Acknowledgement = {
+  type: "ok";
+};
+
+export type Message = Acknowledgement | RegisterMessage | UnregisterMessage | CmdMessage;
 
 export type WatchResponse = {
   type: "watch";
@@ -52,12 +56,16 @@ export type ErrResponse = {
   msg: string;
 };
 
+export type Lifecycle<K> = {
+  type: K;
+};
+
 export type OutResponse<K extends CmdName = CmdName> = K extends CmdName
   ? CmdResultMap[K] extends void
   ? { type: "out"; cmd: K; token: number }
   : { type: "out"; cmd: K; token: number } & CmdResultMap[K]
   : never;
 
-export type Response = WatchResponse | ErrResponse | OutResponse;
+export type Response = Lifecycle<"ready"> | Lifecycle<"cold"> | Lifecycle<"hot"> | WatchResponse | ErrResponse | OutResponse;
 
 export type TransientCb = (out: Response) => void;

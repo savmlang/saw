@@ -19,7 +19,7 @@ export default function App() {
     <NavBar shell={xterm} />
 
     <ResizablePanelGroup className="h-full w-full mx-8 mt-2">
-      <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full bg-gray-300 dark:bg-card/90 rounded-md overflow-none">
+      <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full border border-border dark:bg-card/90 rounded-md overflow-none">
         <Suspense
           fallback={
             <FileViewerSplash />
@@ -41,7 +41,7 @@ export default function App() {
 
       <ResizableHandle withHandle className="mx-2" />
 
-      <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-black dark:bg-card/90 rounded-md items-start text-start justify-start p-4">
+      <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-black dark:bg-card rounded-md items-start text-start justify-start p-4">
         <Suspense
           fallback={
             <LoadingSpinner text="Booting Terminal..." />

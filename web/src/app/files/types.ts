@@ -1,0 +1,1 @@
+export type FileKind = "dir" | "sasm" | "bin" | "textfile" | "js" | "ts" | "file";

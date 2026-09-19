@@ -7,6 +7,7 @@ import type {
 } from "./types";
 import { dirnmap } from "./state";
 import { dirHandle, ls } from "./opfs";
+import { delay } from "./watcher";
 
 export type CommandHandler<K extends CmdName> = (
   cmd: CmdMessage<K>
@@ -44,6 +45,18 @@ export const commandHandlers: CommandHandlers = {
     await dir.getDirectoryHandle(data.dirName, { create: true });
   }
 };
+
+let knowsReady = false;
+
+(async () => {
+  while (!knowsReady) {
+    self.postMessage({
+      type: "ready"
+    } as Response);
+
+    await delay(100);
+  }
+})()
 
 async function handleCommand(data: CmdMessage): Promise<void> {
   const { token, cmd } = data;
@@ -87,8 +100,8 @@ export type ActionHandlers = {
 export const actionHandlers: ActionHandlers = {
   async register(data) {
     dirnmap.set(data.hwnd, {
-      hwnd: await dirHandle(data.dir),
-      old: []
+      hwnd: await dirHandle(data.dir, false),
+      old: undefined
     });
   },
 
@@ -98,6 +111,10 @@ export const actionHandlers: ActionHandlers = {
 
   async cmd(data) {
     await handleCommand(data);
+  },
+
+  ok() {
+    knowsReady = true;
   }
 };
 

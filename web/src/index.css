@@ -120,7 +120,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50 transition-colors;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
@@ -137,7 +137,7 @@
 .xterm,
 .xterm .xterm-viewport,
 .xterm .xterm-screen,
-.xterm .xterm-screen canvas,
+.xterm canvas,
 .xterm .xterm-text-layer,
 .xterm-scrollable-element {
   background-color: transparent !important;

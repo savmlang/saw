@@ -2,9 +2,10 @@ import { Button } from "#components/ui/button";
 import { Skeleton } from "#components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "#components/ui/tooltip";
 import { FilePlus, FolderPlus } from "lucide-react";
+import { Separator } from "#components/ui/separator";
 
 export default function FileViewerSplash() {
-  return <div className="w-full h-full flex flex-col justify-start text-start items-start p-2">
+  return <div className="w-full h-full flex flex-col justify-start text-start items-start p-2 gap-2">
     <div className="w-full text-sm text-foreground flex items-center justify-center gap-1">
       <span className="my-auto mr-auto">Files</span>
 
@@ -45,8 +46,10 @@ export default function FileViewerSplash() {
       </Tooltip>
     </div>
 
+    <Separator />
+
     <Skeleton
-      className="w-full h-full mt-3"
+      className="w-full h-full"
     />
   </div>;
 }

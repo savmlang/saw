@@ -1,4 +1,4 @@
-import type { MainModule } from "../../../public/savm/saw";
+import type { MainModule } from "../../../saw/savm/saw";
 import type { Ptr, usize } from "./core";
 
 export class Allocator {

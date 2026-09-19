@@ -1,9 +1,24 @@
 import type { CbFn, Message, Response, TransientCb } from "../fs/types";
+
 import FsWorker from "../fs/index?worker";
+import { setHotness } from "./store";
+
+export const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 export const fsWorker = new FsWorker({
   name: "fsworker"
 });
+
+let ready = false;
+
+let queue: Message[] = [];
+const launchSender = async () => {
+  while (true) {
+    queue.forEach((msg) => fsWorker.postMessage(msg));
+    queue = [];
+    await delay(10);
+  }
+};
 
 let counter = 0;
 let outcounter = 0;
@@ -14,7 +29,7 @@ export const registerWorker = (directory: string, cb: CbFn): number => {
   counter += 1;
   cbmap.set(counter, cb);
 
-  fsWorker.postMessage({
+  queue.push({
     type: "register",
     dir: directory,
     hwnd: counter
@@ -25,7 +40,7 @@ export const registerWorker = (directory: string, cb: CbFn): number => {
 
 export const unregister = (hwnd: number): void => {
   cbmap.delete(hwnd);
-  fsWorker.postMessage({
+  queue.push({
     type: "unregister",
     hwnd
   } as Message);
@@ -35,7 +50,7 @@ export function registerOut(msg: Message, cb: TransientCb): number {
   outcounter += 1;
   outerr.set(outcounter, cb);
 
-  fsWorker.postMessage({
+  queue.push({
     ...msg,
     token: outcounter
   } as Message);
@@ -49,7 +64,22 @@ fsWorker.onmessage = (msg: MessageEvent<Response>) => {
   if (data.type === "watch") {
     const cb = cbmap.get(data.hwnd);
     if (cb) cb(data.entries);
-  } else {
+  }
+  else if (data.type === "ready") {
+    if (!ready) {
+      ready = true;
+      // Important : Now start scheduler
+      launchSender();
+    }
+
+    queue.push({
+      type: "ok"
+    } as Message);
+  }
+  else if (data.type == "cold" || data.type == "hot") {
+    setHotness(data.type === 'hot');
+  }
+  else {
     const cb = outerr.get(data.token);
 
     if (cb) {
