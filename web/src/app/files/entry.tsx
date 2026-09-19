@@ -6,7 +6,7 @@ import { LuBinary } from "react-icons/lu";
 import { FcFolder, FcOpenedFolder } from "react-icons/fc";
 import { BsTypescript, BsJavascript, BsFileEarmarkBinaryFill, BsFileEarmarkFill, BsFileEarmarkTextFill } from "react-icons/bs";
 
-import { useMemo, type ComponentPropsWithoutRef } from "react";
+import { useMemo, type ComponentPropsWithoutRef, type Ref } from "react";
 import { Spinner } from "#components/ui/spinner";
 
 export function FileEntry({ name, kind, loading, expanded, ...props }: ComponentPropsWithoutRef<'button'> & { loading: boolean, name: string, kind: FileKind, expanded?: boolean }) {
@@ -25,6 +25,43 @@ export function FileEntry({ name, kind, loading, expanded, ...props }: Component
     <span>{name.length > 24 ? name.substring(0, 21) + "..." : name}</span>
   </button>
 }
+
+export function FillEntry({ kind, ref, cancel, ...props }: ComponentPropsWithoutRef<'form'> & { cancel: () => void, kind: FileKind, ref?: Ref<HTMLFormElement | null> }) {
+  const IconData = useMemo(() => Icon({ kind, expanded: false }), [kind]);
+
+  return <form ref={ref} {...props} className="h-6 max-h-6 text-xs rounded-md w-full hover:bg-border/80 dark:hover:bg-border flex text-center items-center px-1 gap-0.5">
+    <div className="w-4" />
+
+    <section className="mr-1">{IconData}</section>
+
+    <input
+      autoFocus={true}
+      minLength={1}
+      maxLength={30}
+      autoCorrect="false"
+      autoCapitalize="false"
+      autoSave="false"
+      autoComplete="false"
+      inputMode="text"
+      className="w-[75%]"
+      pattern={
+        "^(?!(\\.|\\.\\.)$)[\\-A-Za-z0-9._]+$"
+      }
+      onBlur={() =>
+        cancel()
+      }
+      onKeyDown={(e) => {
+        if (e.key == 'Escape') {
+          e.preventDefault();
+
+          cancel();
+        }
+      }}
+      required
+    />
+  </form>
+}
+
 
 function Icon({ kind, expanded }: { kind: FileKind, expanded?: boolean }) {
   switch (kind) {

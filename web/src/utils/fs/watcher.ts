@@ -11,7 +11,7 @@ let currentDelay = 100;
 
 const MIN_DELAY = 100;
 const MAX_DELAY = 5000;
-const BACKOFF_FACTOR = 1.25;
+const BACKOFF_FACTOR = 1.08;
 async function scheduleNextPoll(hasMutated: boolean) {
   if (hasMutated) {
     if (cold) {

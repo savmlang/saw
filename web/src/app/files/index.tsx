@@ -2,13 +2,21 @@ import { Button } from "#components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "#components/ui/tooltip";
 import { FilePlus, FolderPlus, LeafyGreen } from "lucide-react";
 import { Separator } from "#components/ui/separator";
-import { DirectoryListing } from "./dirContainer";
-import { useFsWorker } from "../../utils/fsService";
+import { DirContaier } from "./dirContainer";
 import { useHotness } from "../../utils/fsService/store";
+import { useRef } from "react";
+import type { ActiveState } from "./types";
 
 export default function FileViewer() {
-  const state = useFsWorker('', true);
+  const activeObjRef = useRef<ActiveState | null>(null);
+  const sparseObj = useRef<ActiveState | null>(null);
   const hotState = useHotness();
+
+  const createItem = (file: boolean) => {
+    const state = activeObjRef.current || sparseObj.current!;
+
+    state.trigger.current!(!file);
+  };
 
   return <div className="w-full h-full flex flex-col justify-start text-start items-start p-2 gap-2">
     <div className="w-full text-sm text-foreground flex items-center justify-center gap-1">
@@ -29,7 +37,7 @@ export default function FileViewer() {
             }
           />
           <TooltipContent>
-            <p>Eco Mode</p>
+            <p className="w-[25ch] text-center">Watching (idle). Changes may take up to 5s to appear.</p>
           </TooltipContent>
         </Tooltip>
       </div>
@@ -42,6 +50,8 @@ export default function FileViewer() {
               variant={"outline"}
               className="cursor-pointer"
               aria-label="New File"
+
+              onClick={() => createItem(true)}
             >
               <FilePlus />
             </Button>
@@ -60,6 +70,8 @@ export default function FileViewer() {
               variant={"outline"}
               aria-label="New Folder"
               className="cursor-pointer"
+
+              onClick={() => createItem(false)}
             >
               <FolderPlus />
             </Button>
@@ -73,8 +85,19 @@ export default function FileViewer() {
 
     <Separator />
 
-    <div className="w-full h-full flex flex-col overflow-x-hidden scrollbar-small gap-0.5 text-start items-start justify-start">
-      <DirectoryListing dirPath={[]} entries={state} />
+    <div
+      className="w-full h-full flex flex-col overflow-x-hidden scrollbar-small gap-0.5 text-start items-start justify-start"
+      onClick={(e) => {
+        e.stopPropagation();
+        activeObjRef.current = null;
+      }}
+    >
+      <DirContaier
+        activeRef={activeObjRef}
+        name=""
+        path={[]}
+        sparse={sparseObj}
+      />
     </div>
   </div>;
 }

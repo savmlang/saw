@@ -43,6 +43,12 @@ export const commandHandlers: CommandHandlers = {
     const dir = await dirHandle(data.dir, true);
 
     await dir.getDirectoryHandle(data.dirName, { create: true });
+  },
+
+  async touch(data) {
+    const dir = await dirHandle(data.dir, true);
+
+    await dir.getFileHandle(data.fileName, { create: true });
   }
 };
 

@@ -64,3 +64,17 @@ export async function requestMkdir(dir: string, dirName: string): Promise<void> 
     }
   });
 }
+
+export async function requestTouch(dir: string, fileName: string): Promise<void> {
+  return sendWorkerCmd<void>({
+    type: "cmd",
+    cmd: "touch",
+    dir,
+    fileName,
+    token: 0
+  }, (out, resolve) => {
+    if (out.type === "out" && out.cmd === "touch") {
+      resolve();
+    }
+  });
+}
