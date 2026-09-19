@@ -56,7 +56,7 @@ export class SaShell {
   }
 
   launch() {
-    this.term.writeln(`⚡  SaVM Runtime v0.4.2 ${underline("[wasm32-emscripten]")}`);
+    this.term.writeln(`⚡ SaVM Runtime v0.4.2 ${underline("[wasm32-emscripten]")}`);
     this.term.writeln(bold("This is a basic web shell"));
     this.term.writeln(`Run ${underline("help")} for a list of commands.`);
     this.term.writeln("");
@@ -74,7 +74,7 @@ export class SaShell {
   async shellprompt() {
     const term = this.term;
 
-    const prefix = `${blue("sashell")} ${this.cwd}${bold("❯")} `;
+    const prefix = `${green("sashell")} ${this.cwd}${bold("❯")} `;
     this.askPrompt.promptPrefix = prefix;
 
     const promptData = (await this.askPrompt.getPrompt()).trim();

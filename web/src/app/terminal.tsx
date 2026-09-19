@@ -1,6 +1,8 @@
 import { Terminal } from "@xterm/xterm";
-
+import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { CanvasAddon } from '@xterm/addon-canvas';
 import { FitAddon } from "@xterm/addon-fit";
+
 import { useEffect, useRef } from "react";
 import { SaShell } from "../utils/sash";
 
@@ -9,11 +11,6 @@ if (import.meta.hot) {
     window.location.reload();
   });
 }
-
-// const light = {
-//   foreground: "black",
-//   cursor: "black"
-// };
 
 const dark = {
   foreground: "white",
@@ -29,10 +26,22 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
     containerRef.current.innerHTML = "";
 
     const term = new Terminal({
+      fontFamily: [
+        'Menlo',
+        'Monaco',
+        'Consolas',
+        '"Liberation Mono"',
+        '"Courier New"',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Noto Color Emoji"',
+        'monospace'
+      ].join(', '),
+      lineHeight: 1.2,
       cursorBlink: true,
-      fontFamily: "monospace",
       fontSize: 14,
 
+      allowProposedApi: true,
       allowTransparency: true,
 
       theme: {
@@ -44,6 +53,15 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
     });
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
+
+    const canvasAddon = new CanvasAddon();
+    term.loadAddon(canvasAddon);
+
+    const uc11 = new Unicode11Addon();
+    term.loadAddon(uc11);
+
+    term.unicode.activeVersion = '11';
+
     term.open(containerRef.current);
 
     requestAnimationFrame(() => {
@@ -69,6 +87,8 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
 
     return () => {
       resizeObserver.disconnect();
+      uc11.dispose();
+      canvasAddon.dispose();
       term.dispose();
       xterm.current = null;
     };

@@ -103,7 +103,7 @@ export function DirContaier({ activeRef, name, path, sparse }: Props) {
       />
 
       <ContextMenuContent>
-        <ContextMenuGroup className="text-muted-foreground">
+        <ContextMenuGroup>
           <ContextMenuLabel>Folder</ContextMenuLabel>
 
           <ContextMenuItem
@@ -138,6 +138,7 @@ export function DirContaier({ activeRef, name, path, sparse }: Props) {
           <ContextMenuLabel>Actions</ContextMenuLabel>
           <ContextMenuItem
             variant="destructive"
+            className='text-destructive! hover:text-foreground! bg-destructive/20!'
             onClick={() => {
               toast.promise(requestRm(path.join("/"), name, true), {
                 position: "bottom-right",
