@@ -66,6 +66,7 @@ export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
     <Button
       className={"h-10"}
       variant={"outline"}
+      aria-label="Toggle Theme"
       onClick={() => {
         updateToggleTheme();
       }}

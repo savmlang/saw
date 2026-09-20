@@ -51,15 +51,17 @@ export default function App() {
     <TerminalView ref={xterm} />
   </Suspense>;
 
+  const navbar = <NavBar shell={xterm} />;
+
   const desktop = useMediaQuery("(min-width: 768px)");
 
   if (!desktop) return <State.Provider value={state}>
-    <MobileView xterm={xterm} editor={editor} files={fileview} terminal={terminal} />
+    <MobileView navbar={navbar} editor={editor} files={fileview} terminal={terminal} />
   </State.Provider>;
 
   return <State.Provider value={state}>
     <div className="flex flex-col w-full h-full overflow-hidden p-4 items-center text-center justify-center">
-      <NavBar shell={xterm} />
+      {navbar}
 
       <ResizablePanelGroup className="h-full w-full mx-8 mt-2">
         <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full border border-border dark:bg-card/90 rounded-md overflow-none">
