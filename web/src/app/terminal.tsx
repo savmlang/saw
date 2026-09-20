@@ -66,7 +66,6 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
           '"Noto Color Emoji"',
           'monospace'
         ].join(', '),
-        lineHeight: 1.2,
         cursorBlink: true,
         fontSize: 14,
 
