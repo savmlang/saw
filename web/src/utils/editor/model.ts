@@ -14,6 +14,6 @@ export class ModelManager {
   }
 
   listen(cb: ModelMapCallback<void>) {
-
+    this.listeners.add(cb);
   }
 }
