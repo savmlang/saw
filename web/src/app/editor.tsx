@@ -1,7 +1,7 @@
 import { Spinner } from "#components/ui/spinner";
 import small from "../assets/small.svg";
 
-export default function Editor({ loading }: { loading: boolean }) {
+export default function Editor({ loading, text }: { loading: boolean, text?: string }) {
   return <div className="w-full h-full flex flex-col bg-gray-300 dark:bg-card/90 rounded-md justify-center text-center items-center select-none">
     <img
       src={small}
@@ -14,7 +14,7 @@ export default function Editor({ loading }: { loading: boolean }) {
     {loading ?
       <div className="flex gap-1 justify-center items-center text-center text-muted-foreground mt-5">
         <Spinner />
-        <span>Loading Editor</span>
+        <span>{text || "Loading Editor"}</span>
       </div> :
 
       <div className="flex gap-1 justify-center items-center text-center text-muted-foreground mt-5">
