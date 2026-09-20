@@ -7,20 +7,21 @@ import { updateToggleTheme } from "../../utils/theme";
 
 import type { SaShell } from "../../utils/sash";
 import type { RefObject } from "react";
+
 import { Spinner } from "#components/ui/spinner";
 import { Badge } from "#components/ui/badge";
 
-import { savmWasmRuntime, useWasmState } from "../../utils/wasm";
+import { savmWasmRuntime, useWasmState, type Status } from "../../utils/wasm";
 import { LeafyGreenIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "#components/ui/tooltip";
 
 export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
-  const status = useWasmState(savmWasmRuntime);
+  const status: Status = useWasmState(savmWasmRuntime);
 
   return <div className="w-full mx-8 p-2 h-14 flex gap-2 border border-border bg-accent dark:bg-card/90 rounded-md">
     <ButtonGroup>
       <Button
-        className={"h-10 w-24"}
+        className={"h-10 w-12 md:w-24"}
         variant={"default"}
         onClick={() => {
           shell.current?.askPrompt.forcePrompt("sasm")
@@ -38,7 +39,7 @@ export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
     </ButtonGroup>
 
     <Badge
-      className={"ml-auto h-7 flex text-center justfify-center items-center"}
+      className={"ml-auto h-7 hidden! md:flex! text-center justfify-center items-center"}
       variant={"outline"}
     >
       {
@@ -50,6 +51,18 @@ export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
         status === "running" ? "SaVM is running" : status[0].toUpperCase() + status.slice(1) + " SaVM"}
     </Badge>
 
+    <Badge
+      className={"ml-auto h-7 md:hidden flex text-center justfify-center items-center"}
+      variant={"outline"}
+    >
+      {
+        status !== "running" ?
+          <Spinner className="size-4" /> :
+          <LeafyGreenIcon className="size-4 text-green-800 dark:text-green-500" />
+      }
+      {status[0].toUpperCase() + status.slice(1)}
+    </Badge>
+
     <Button
       className={"h-10"}
       variant={"outline"}
@@ -58,7 +71,7 @@ export function NavBar({ shell }: { shell: RefObject<SaShell | null> }) {
       }}
     >
       <BiPaint className="size-4" />
-      Theme
+      <span className="hidden md:block">Theme</span>
     </Button>
 
     <Tooltip>

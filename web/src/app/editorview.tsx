@@ -23,7 +23,7 @@ export default function EnhancedEditorView({ ref: editorObj }: { ref: RefObject<
   const editorDiv = useRef<HTMLDivElement>(null);
   const [init,] = useState(false);
 
-  const [models] = useState([]);
+  const [models] = useState(['a']);
 
   const theme = useTheme();
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function EnhancedEditorView({ ref: editorObj }: { ref: RefObject<
 
     {(models.length != 0 && init) &&
       <>
-        <div className={`w-full bg-gray-300 dark:bg-card/90 flex flex-col text-start justify-start rounded-md items-start overflow-hidden p-1 pb-1.5 h-14 ${models.length == 0 ? "hidden" : ""}`}>
+        <div className={`w-full border border-zinc-300 dark:border-border dark:bg-card flex flex-col text-start justify-start rounded-md items-start overflow-hidden p-1 pb-1.5 h-14 ${models.length == 0 ? "hidden" : ""}`}>
           <div className="w-full h-12 overflow-y-hidden overflow-x-scroll scrollbar-small">
 
           </div>
@@ -66,7 +66,7 @@ export default function EnhancedEditorView({ ref: editorObj }: { ref: RefObject<
       </>
     }
 
-    <div className={`${models.length == 0 && init ? "" : "hidden"} overflow-x-hidden bg-gray-300 dark:bg-card/90 w-full h-full flex items-start justify-start text-start rounded-md p-2`}>
+    <div className={`${(models.length != 0 && init) ? "" : "hidden"} border border-zinc-300 dark:border-border overflow-x-hidden dark:bg-card w-full h-full flex items-start justify-start text-start rounded-md p-2`}>
       <div className="w-full h-full" ref={editorDiv}></div>
     </div>
   </div>

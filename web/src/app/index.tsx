@@ -8,8 +8,11 @@ import type { editor } from "monaco-editor";
 
 import Editor from "./editor";
 import FileViewerSplash from "./files/splash";
+
 import { State } from "../utils/editor";
 import { ModelManager } from "../utils/editor/model";
+import { MobileView } from "./mobile";
+import { useMediaQuery } from "../utils/media";
 
 const TerminalView = lazy(() => import("./terminal"));
 const EnhancedEditorView = lazy(() => import("./editorview"));
@@ -26,41 +29,53 @@ export default function App() {
     models: new ModelManager()
   };
 
+  const fileview = <Suspense
+    fallback={
+      <FileViewerSplash />
+    }>
+    <FileView />
+  </Suspense>;
+
+  const editor = <Suspense
+    fallback={
+      <Editor loading />
+    }>
+    <EnhancedEditorView ref={editorObj} />
+  </Suspense>;
+
+  const terminal = <Suspense
+    fallback={
+      <LoadingSpinner text="Booting Terminal..." />
+    }
+  >
+    <TerminalView ref={xterm} />
+  </Suspense>;
+
+  const desktop = useMediaQuery("(min-width: 768px)");
+
+  if (!desktop) return <State.Provider value={state}>
+    <MobileView xterm={xterm} editor={editor} files={fileview} terminal={terminal} />
+  </State.Provider>;
+
   return <State.Provider value={state}>
     <div className="flex flex-col w-full h-full overflow-hidden p-4 items-center text-center justify-center">
       <NavBar shell={xterm} />
 
       <ResizablePanelGroup className="h-full w-full mx-8 mt-2">
         <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full border border-border dark:bg-card/90 rounded-md overflow-none">
-          <Suspense
-            fallback={
-              <FileViewerSplash />
-            }>
-            <FileView />
-          </Suspense>
+          {fileview}
         </ResizablePanel>
 
         <ResizableHandle withHandle className="mx-2" />
 
         <ResizablePanel defaultSize={"75%"} className="h-full rounded-md flex">
-          <Suspense
-            fallback={
-              <Editor loading />
-            }>
-            <EnhancedEditorView ref={editorObj} />
-          </Suspense>
+          {editor}
         </ResizablePanel>
 
         <ResizableHandle withHandle className="mx-2" />
 
-        <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-black dark:bg-card rounded-md items-start text-start justify-start p-4">
-          <Suspense
-            fallback={
-              <LoadingSpinner text="Booting Terminal..." />
-            }
-          >
-            <TerminalView ref={xterm} />
-          </Suspense>
+        <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full border border-border bg-zinc-900 dark:bg-card rounded-md items-start text-start justify-start p-4">
+          {terminal}
         </ResizablePanel>
       </ResizablePanelGroup>
 
