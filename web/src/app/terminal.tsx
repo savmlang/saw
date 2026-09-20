@@ -3,8 +3,8 @@ import { SaShell } from "../utils/sash";
 
 import type { Terminal } from "@xterm/xterm";
 import type { FitAddon } from "@xterm/addon-fit";
-import type { CanvasAddon } from "@xterm/addon-canvas";
 import type { Unicode11Addon } from "@xterm/addon-unicode11";
+import "@xterm/xterm/css/xterm.css"
 
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
@@ -31,7 +31,6 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
 
     let term: Terminal | undefined;
     let fitAddon: FitAddon | undefined;
-    let canvasAddon: CanvasAddon | undefined;
     let uc11: Unicode11Addon | undefined;
     let resizeObserver: ResizeObserver | undefined;
     let sashell: SaShell | undefined;
@@ -43,14 +42,11 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
       const [
         { Terminal },
         { FitAddon },
-        { CanvasAddon },
         { Unicode11Addon },
       ] = await Promise.all([
         import("@xterm/xterm"),
         import("@xterm/addon-fit"),
-        import("@xterm/addon-canvas"),
-        import("@xterm/addon-unicode11"),
-        import("@xterm/xterm/css/xterm.css"),
+        import("@xterm/addon-unicode11")
       ]);
 
       if (mounted) await yieldToMain();
@@ -82,26 +78,31 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
 
       if (mounted) await yieldToMain();
       if (mounted) fitAddon = new FitAddon();
-      if (mounted) await yieldToMain();
-      if (mounted) canvasAddon = new CanvasAddon();
+      // @ts-ignore
+      globalThis.terminal = {
+        fitAddon,
+        term,
+        view
+      };
       if (mounted) await yieldToMain();
       if (mounted) uc11 = new Unicode11Addon();
 
       if (mounted) await yieldToMain();
       if (mounted) term!.loadAddon(fitAddon!);
       if (mounted) await yieldToMain();
-      if (mounted) term!.loadAddon(canvasAddon!);
-      if (mounted) await yieldToMain();
       if (mounted) term!.loadAddon(uc11!);
 
       if (mounted) await yieldToMain();
       if (mounted) term!.unicode.activeVersion = '11';
+
+      if (mounted) await yieldToMain();
+      if (mounted) fitAddon!.fit();
+
+      if (mounted) await yieldToMain();
       if (mounted) term!.open(view);
 
       if (mounted) await yieldToMain();
-      if (mounted) requestAnimationFrame(() => {
-        fitAddon!.fit();
-      });
+      if (mounted) fitAddon!.fit();
 
       if (mounted) await yieldToMain();
       if (mounted) resizeObserver = new ResizeObserver(() => {
@@ -130,7 +131,6 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
 
       resizeObserver?.disconnect();
       uc11?.dispose();
-      canvasAddon?.dispose();
 
       term?.dispose();
 

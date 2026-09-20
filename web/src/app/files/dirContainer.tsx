@@ -1,11 +1,14 @@
 import { Separator } from "#components/ui/separator";
+import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger } from "#components/ui/context-menu";
+
 import { Fragment, useEffect, useRef, useState, type RefObject, } from "react";
 import { requestMkdir, requestRm, requestTouch, useFsWorker } from "../../utils/fsService";
-import { FileEntry, FillEntry } from "./entry";
+import { FileEntry, Icon, FillEntry } from "./entry";
+
 import type { Entries } from "../../utils/fs/types";
 import type { ActiveRef, Callback, FileKind, RefNode, } from "./types";
+
 import { toast } from "sonner";
-import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger } from "#components/ui/context-menu";
 import { ExpandIcon, FilePlus2, FolderPlusIcon, ShrinkIcon, TrashIcon } from "lucide-react";
 
 interface Props {
@@ -166,6 +169,15 @@ export function DirContaier({ activeRef, name, path, sparse }: Props) {
 }
 
 export function DirectoryListing({ process, trigger, refNode, kind, activeRef, dirPath, entries }: { process?: (e?: HTMLFormElement) => void, trigger: RefObject<Callback>, refNode: RefNode, kind?: FileKind, activeRef: ActiveRef, dirPath: string[], entries: Entries | 'loading' }) {
+  const deleteFile = (name: string) => toast.promise(requestRm(dirPath.join("/"), name, false), {
+    position: "bottom-right",
+    loading: "Deleting file...",
+    success: "Deleted",
+    error: (err) => `An error occured: ${err}`
+  });
+  const openEditor = () => {
+    toast.error("Coming Soon");
+  };
 
   return <Fragment>
     {kind
@@ -187,23 +199,63 @@ export function DirectoryListing({ process, trigger, refNode, kind, activeRef, d
         const key = val.name + val.kind;
 
         if (val.kind == 'file') {
-          return <FileEntry
-            key={key}
-            kind={guessKind(val.name)}
-            name={val.name}
-            loading={false}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (refNode.current) {
-                activeRef.current = {
-                  node: refNode.current!,
-                  trigger
-                };
-              } else {
-                activeRef.current = null;
+          const kind = guessKind(val.name);
+
+          return <ContextMenu key={key}>
+            <ContextMenuTrigger
+              render={
+                <FileEntry
+                  kind={kind}
+                  name={val.name}
+                  loading={false}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (refNode.current) {
+                      activeRef.current = {
+                        node: refNode.current!,
+                        trigger
+                      };
+                    } else {
+                      activeRef.current = null;
+                    }
+
+                    openEditor();
+                  }}
+                />
               }
-            }}
-          />
+            />
+            <ContextMenuContent>
+              <ContextMenuGroup>
+                <ContextMenuLabel>File</ContextMenuLabel>
+
+                <ContextMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEditor();
+                  }}
+                >
+                  <Icon kind={kind} expanded />
+                  Open in editor
+                </ContextMenuItem>
+              </ContextMenuGroup>
+
+              <ContextMenuGroup>
+                <ContextMenuLabel>Actions</ContextMenuLabel>
+
+                <ContextMenuItem
+                  variant="destructive"
+                  className='text-destructive! hover:text-foreground! bg-destructive/20!'
+                  onClick={() =>
+                    deleteFile(val.name)
+                  }
+                >
+                  <TrashIcon />
+
+                  Delete
+                </ContextMenuItem>
+              </ContextMenuGroup>
+            </ContextMenuContent>
+          </ContextMenu>;
         }
 
         return <DirContaier activeRef={activeRef} key={key} name={val.name} path={dirPath} />
@@ -212,33 +264,33 @@ export function DirectoryListing({ process, trigger, refNode, kind, activeRef, d
   </Fragment>;
 }
 
-const guessKind = (name: string) => {
-  const tkns: { ends: (string | RegExp)[]; kind: FileKind; }[] = [
-    {
-      ends: [".js"],
-      kind: "js"
-    },
-    {
-      ends: [".ts"],
-      kind: "ts"
-    },
-    {
-      ends: [".bin", ".sabin", ".sbin", ".exe"],
-      kind: "bin"
-    },
-    {
-      ends: [".sasm"],
-      kind: "sasm"
-    },
-    {
-      ends: [/^.*\..*$/],
-      kind: "textfile"
-    }
-  ];
+const tkns: { ends: (string | RegExp)[]; kind: FileKind; }[] = [
+  {
+    ends: [".js"],
+    kind: "js"
+  },
+  {
+    ends: [".ts"],
+    kind: "ts"
+  },
+  {
+    ends: [".bin", ".sabin", ".sbin", ".exe"],
+    kind: "bin"
+  },
+  {
+    ends: [".sasm"],
+    kind: "sasm"
+  },
+  {
+    ends: [/^.*\..*$/],
+    kind: "textfile"
+  }
+];
 
+const guessKind = (name: string) => {
   for (const category of tkns) {
     if (category.ends.some((s) =>
-      typeof (s) == 'string' ? name.endsWith(s) : s.test(name)
+      typeof s == 'string' ? name.endsWith(s) : s.test(name)
     )) {
       return category.kind
     }

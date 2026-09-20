@@ -4,55 +4,68 @@ import { lazy, Suspense, useRef } from "react";
 import { Spinner } from "#components/ui/spinner";
 
 import type { SaShell } from "../utils/sash";
+import type { editor } from "monaco-editor";
 
 import Editor from "./editor";
 import FileViewerSplash from "./files/splash";
+import { State } from "../utils/editor";
+import { ModelManager } from "../utils/editor/model";
 
 const TerminalView = lazy(() => import("./terminal"));
 const EnhancedEditorView = lazy(() => import("./editorview"));
 const FileView = lazy(() => import("./files/index"));
 
+
 export default function App() {
   const xterm = useRef<SaShell | null>(null);
+  const editorObj = useRef<editor.IStandaloneCodeEditor>(undefined);
 
-  return <div className="flex flex-col w-full h-full overflow-hidden p-4 items-center text-center justify-center">
-    <NavBar shell={xterm} />
+  const state = {
+    xterm,
+    editorObj,
+    models: new ModelManager()
+  };
 
-    <ResizablePanelGroup className="h-full w-full mx-8 mt-2">
-      <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full border border-border dark:bg-card/90 rounded-md overflow-none">
-        <Suspense
-          fallback={
-            <FileViewerSplash />
-          }>
-          <FileView />
-        </Suspense>
-      </ResizablePanel>
+  return <State.Provider value={state}>
+    <div className="flex flex-col w-full h-full overflow-hidden p-4 items-center text-center justify-center">
+      <NavBar shell={xterm} />
 
-      <ResizableHandle withHandle className="mx-2" />
+      <ResizablePanelGroup className="h-full w-full mx-8 mt-2">
+        <ResizablePanel minSize={"16rem"} defaultSize={"18rem"} maxSize={"20%"} className="h-full border border-border dark:bg-card/90 rounded-md overflow-none">
+          <Suspense
+            fallback={
+              <FileViewerSplash />
+            }>
+            <FileView />
+          </Suspense>
+        </ResizablePanel>
 
-      <ResizablePanel defaultSize={"75%"} className="h-full rounded-md flex">
-        <Suspense
-          fallback={
-            <Editor loading />
-          }>
-          <EnhancedEditorView />
-        </Suspense>
-      </ResizablePanel>
+        <ResizableHandle withHandle className="mx-2" />
 
-      <ResizableHandle withHandle className="mx-2" />
+        <ResizablePanel defaultSize={"75%"} className="h-full rounded-md flex">
+          <Suspense
+            fallback={
+              <Editor loading />
+            }>
+            <EnhancedEditorView ref={editorObj} />
+          </Suspense>
+        </ResizablePanel>
 
-      <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-black dark:bg-card rounded-md items-start text-start justify-start p-4">
-        <Suspense
-          fallback={
-            <LoadingSpinner text="Booting Terminal..." />
-          }
-        >
-          <TerminalView ref={xterm} />
-        </Suspense>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        <ResizableHandle withHandle className="mx-2" />
 
-  </div>;
+        <ResizablePanel minSize={"20rem"} defaultSize={"35rem"} maxSize={"35%"} className="h-full bg-black dark:bg-card rounded-md items-start text-start justify-start p-4">
+          <Suspense
+            fallback={
+              <LoadingSpinner text="Booting Terminal..." />
+            }
+          >
+            <TerminalView ref={xterm} />
+          </Suspense>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+
+    </div>
+  </State.Provider>;
 }
 
 function LoadingSpinner({ text }: { text: string }) {

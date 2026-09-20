@@ -15,14 +15,17 @@ export function FileEntry({ name, kind, loading, expanded, ...props }: Component
   return <button {...props} className="cursor-pointer h-6 max-h-6 text-xs rounded-md w-full hover:bg-border/80 dark:hover:bg-border flex text-center items-center px-1 gap-0.5">
     {
       loading ?
-        <Spinner className="size-3 mx-0.5" />
+        <Spinner className="size-3 max-size-3 min-size-3 mx-0.5" />
         :
-        kind == 'dir' ? <ChevronRight className={`size-4 transition-all ${expanded ? "rotate-90" : ""}`} /> : <div className="w-4" />
+        kind == 'dir' ?
+          <ChevronRight className={`size-4 transition-all ${expanded ? "rotate-90" : ""}`} />
+          :
+          <div className="w-4 min-w-4 max-w-4" />
     }
 
     <section className="mr-1">{IconData}</section>
 
-    <span>{name.length > 24 ? name.substring(0, 21) + "..." : name}</span>
+    <span className="truncate">{name}</span>
   </button>
 }
 
@@ -63,7 +66,7 @@ export function FillEntry({ kind, ref, cancel, ...props }: ComponentPropsWithout
 }
 
 
-function Icon({ kind, expanded }: { kind: FileKind, expanded?: boolean }) {
+export function Icon({ kind, expanded }: { kind: FileKind, expanded?: boolean }) {
   switch (kind) {
     case "dir":
       return expanded ? <FcOpenedFolder className="size-4" /> : <FcFolder className="size-4" />;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type RefObject } from "react"
 import { editor } from "monaco-editor"
 import { useTheme } from "../utils/theme";
 import { Separator } from "#components/ui/separator";
@@ -18,10 +18,8 @@ editor.defineTheme('dark', {
   }
 });
 
-
-export default function EnhancedEditorView() {
+export default function EnhancedEditorView({ ref: editorObj }: { ref: RefObject<editor.IStandaloneCodeEditor | undefined> }) {
   const editorDiv = useRef<HTMLDivElement>(null);
-  const editorObj = useRef<editor.IStandaloneCodeEditor>(undefined);
 
   const [models] = useState([]);
 
@@ -43,7 +41,7 @@ export default function EnhancedEditorView() {
       cancelIdleCallback(hwnd);
       editorObj.current?.dispose();
     }
-  }, []);
+  }, [editorObj]);
 
   return <div className="w-full h-full flex flex-col gap-2">
     {models.length == 0 && <Editor loading={false} />}
