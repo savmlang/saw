@@ -36,6 +36,10 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
     let resizeObserver: ResizeObserver | undefined;
     let sashell: SaShell | undefined;
     (async () => {
+      async function yieldToMain() {
+        return new Promise(resolve => setTimeout(resolve, 10));
+      }
+
       const [
         { Terminal },
         { FitAddon },
@@ -49,7 +53,7 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
         import("@xterm/xterm/css/xterm.css"),
       ]);
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) term = new Terminal({
         fontFamily: [
           'Menlo',
@@ -77,30 +81,30 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
         }
       });
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) fitAddon = new FitAddon();
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) canvasAddon = new CanvasAddon();
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) uc11 = new Unicode11Addon();
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) term!.loadAddon(fitAddon!);
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) term!.loadAddon(canvasAddon!);
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) term!.loadAddon(uc11!);
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) term!.unicode.activeVersion = '11';
       if (mounted) term!.open(view);
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) requestAnimationFrame(() => {
         fitAddon!.fit();
       });
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) resizeObserver = new ResizeObserver(() => {
         if (
           containerRef.current &&
@@ -111,14 +115,14 @@ export default function TerminalView({ ref: xterm }: { ref: React.RefObject<SaSh
         }
       });
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) resizeObserver!.observe(view);
       if (mounted) sashell = new SaShell(term!);
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) xterm.current = sashell!;
 
-      if (mounted) await scheduler.yield();
+      if (mounted) await yieldToMain();
       if (mounted) sashell!.launch();
     })();
 
