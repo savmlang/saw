@@ -3,7 +3,7 @@ import type { RefObject } from "react";
 export async function loadMonaco(
   editorDiv: RefObject<HTMLDivElement | null>
 ) {
-  const [, { editor }] = await Promise.all([
+  const [, { Uri, editor }] = await Promise.all([
     import("./offload"),
     import("monaco-editor")
   ]);
@@ -49,5 +49,12 @@ export async function loadMonaco(
     },
   });
 
-  return { monacoInstance, editor };
+  return {
+    monacoInstance,
+    editor,
+
+    parse(data: string) {
+      return Uri.parse(data)
+    },
+  };
 }

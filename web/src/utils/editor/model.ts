@@ -1,7 +1,7 @@
-import { Uri, type editor as Editor } from "monaco-editor";
+import type { Uri, editor as Editor } from "monaco-editor";
+import type { AppCtx } from ".";
 
 import { useRef, useSyncExternalStore, type RefObject } from "react";
-import type { AppCtx } from ".";
 import { delay, requestCat, requestTouch } from "../fsService";
 
 export type CodeEditor = Editor.IStandaloneCodeEditor;
@@ -18,6 +18,8 @@ export interface Task {
 export class ModelManager {
   models: Set<Model> = new Set();
   listeners: Set<(_: ModelMap) => void> = new Set();
+
+  parse: (_: string) => Uri = undefined as unknown as (_: string) => Uri;
   editor: Editor.IStandaloneCodeEditor | Set<() => void> = new Set();
   monaco: typeof Editor | Promise<void> | undefined = undefined;
 
@@ -81,9 +83,11 @@ export class ModelManager {
     if (!this.monaco) {
       this.monaco = (async () => {
         const {
-          editor, monacoInstance
+          editor, monacoInstance, parse
         } = await (await import("./load")).loadMonaco(this.ctx.editorDiv);
 
+
+        this.parse = parse;
         this.addEditor(monacoInstance, editor);
       })();
     }
@@ -109,7 +113,7 @@ export class ModelManager {
     const dir = dirName.join('/');
 
     const url = path.join("/");
-    const uri = Uri.parse(`file://${url}`);
+    const uri = this.parse(`file://${url}`);
 
     const model = monaco.getModel(uri) ?? monaco.createModel(
       new TextDecoder().decode(await requestCat(dir, fileName)),
