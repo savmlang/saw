@@ -11,7 +11,7 @@ export interface Props {
 }
 
 export function MobileView({ editor, files, terminal, navbar }: Props) {
-  const [page, setPage] = useState("files");
+  const [page, setPage] = useState("editor");
   const pageClass = (page: string, target: string, ignore = false) => ("w-full h-full rounded-md overflow-none flex items-start justify-start text-start" + (page == target ? "" : " hidden") + (!ignore ? " border border-border dark:bg-card! p-2" : ""));
 
   return <div className="flex flex-col w-full h-full overflow-hidden p-4 gap-2 items-center text-center">
@@ -23,7 +23,7 @@ export function MobileView({ editor, files, terminal, navbar }: Props) {
 
     <div className="absolute bottom-0">
       <Tabs
-        defaultValue={"files"}
+        defaultValue={"editor"}
         onValueChange={setPage}
       >
         <TabsList
