@@ -1,10 +1,9 @@
+import type { SaShell } from "../utils/sash";
+
 import { NavBar } from "#components/app/navbar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "#components/ui/resizable";
-import { lazy, Suspense, useRef } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
 import { Spinner } from "#components/ui/spinner";
-
-import type { SaShell } from "../utils/sash";
-import type { editor } from "monaco-editor";
 
 import Editor from "./editor";
 import FileViewerSplash from "./files/splash";
@@ -21,13 +20,16 @@ const FileView = lazy(() => import("./files/index"));
 
 export default function App() {
   const xterm = useRef<SaShell | null>(null);
-  const editorObj = useRef<editor.IStandaloneCodeEditor>(undefined);
+  const editorDiv = useRef<HTMLDivElement>(null);
 
-  const state = {
+  const state = useMemo(() => ({
     xterm,
-    editorObj,
+    editorDiv,
     models: new ModelManager()
-  };
+  }), []);
+  useEffect(() => {
+    state.models.registerCtx(state);
+  }, [state]);
 
   const fileview = <Suspense
     fallback={
@@ -40,7 +42,7 @@ export default function App() {
     fallback={
       <Editor loading />
     }>
-    <EnhancedEditorView ref={editorObj} />
+    <EnhancedEditorView ref={editorDiv} />
   </Suspense>;
 
   const terminal = <Suspense

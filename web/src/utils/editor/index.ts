@@ -1,27 +1,25 @@
 import { createContext, useContext, type RefObject } from "react";
+
 import type { SaShell } from "../sash";
-import type { editor } from "monaco-editor";
 import type { ModelManager } from "./model";
 
-interface AppCtx {
+export interface AppCtx {
   xterm: RefObject<SaShell | null>,
-  editorObj: RefObject<editor.IStandaloneCodeEditor | undefined>,
+  editorDiv: RefObject<HTMLDivElement | null>,
 
   models: ModelManager,
 }
 
 export const State = createContext<AppCtx>(undefined as unknown as AppCtx);
 
-export function useEditorRef() {
-  return useContext(State)?.editorObj;
+export function useAppCtx() {
+  return useContext(State);
 }
 
-export class EditorHandle {
-  editor: editor.IStandaloneCodeEditor;
+export class MonacoHandle {
   model: ModelManager;
 
   constructor(state: AppCtx) {
-    this.editor = state.editorObj.current!;
     this.model = state.models;
   }
 }

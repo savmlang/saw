@@ -10,8 +10,9 @@ import { dirHandle, ls } from "./opfs";
 import { delay } from "./watcher";
 
 export type CommandHandler<K extends CmdName> = (
-  cmd: CmdMessage<K>
-) => Promise<CmdResultMap[K]> | CmdResultMap[K];
+  cmd: CmdMessage<K>,
+  transfers: Transferable[]
+) => Promise<CmdResultMap[K]>;
 
 export type CommandHandlers = {
   [K in CmdName]: CommandHandler<K>;
@@ -48,7 +49,24 @@ export const commandHandlers: CommandHandlers = {
   async touch(data) {
     const dir = await dirHandle(data.dir, true);
 
-    await dir.getFileHandle(data.fileName, { create: true });
+    const file = await dir.getFileHandle(data.fileName, { create: true });
+
+    if (data.content) {
+      const hwnd = await file.createWritable({ keepExistingData: false });
+      await hwnd.write(data.content);
+      await hwnd.close();
+    }
+  },
+
+  async cat(data, transfers) {
+    const dir = await dirHandle(data.dir, true);
+
+    const file = await dir.getFileHandle(data.fileName, { create: true });
+
+    const value = await (await file.getFile()).arrayBuffer();
+
+    transfers.push(value);
+    return { content: value };
   }
 };
 
@@ -68,21 +86,26 @@ async function handleCommand(data: CmdMessage): Promise<void> {
   const { token, cmd } = data;
   try {
     const handler = commandHandlers[cmd] as (
-      msg: CmdMessage
-    ) => Promise<Record<string, unknown> | void> | Record<string, unknown> | void;
+      msg: CmdMessage,
+      transfers: Transferable[]
+    ) => Promise<Record<string, unknown> | void>;
 
     if (!handler) {
       throw new Error(`Unknown command: ${cmd}`);
     }
 
-    const result = await handler(data);
+    const transfers: Transferable[] = [];
+    const result = await handler(data, transfers);
 
     self.postMessage({
       type: "out",
       cmd,
       token,
       ...(result && typeof result === "object" ? result : {})
-    } as Response);
+    } as Response,
+      // @ts-ignore
+      transfers
+    );
   } catch (e) {
     self.postMessage({
       type: "err",

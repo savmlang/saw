@@ -1,49 +1,31 @@
-import { useEffect, useRef, useState, type RefObject } from "react"
+import { Fragment, useEffect, type Ref } from "react"
 import { useTheme } from "../utils/theme";
 import { Separator } from "#components/ui/separator";
 
-import type { editor } from "monaco-editor"
-
 import Editor from "./editor"
 
-import "../utils/editor/offload";
+import { useAppCtx } from "../utils/editor";
+import { useIsMonacoMounted, useMonacoModels } from "../utils/editor/model";
+import { Tab } from "./helper/tab";
 
-// editor.defineTheme('dark', {
-//   base: 'vs-dark', // can be 'vs', 'vs-dark', or 'hc-black'
-//   inherit: true,
-//   rules: [],
-//   colors: {
-//     // #00000000 sets editor background to 100% transparent
-//     'editor.background': '#00000000',
-//     'minimap.background': '#00000000',
-//   }
-// });
+export default function EnhancedEditorView({ ref }: { ref: Ref<HTMLDivElement | null> }) {
+  const appCtx = useAppCtx();
 
-export default function EnhancedEditorView({ ref: editorObj }: { ref: RefObject<editor.IStandaloneCodeEditor | undefined> }) {
-  const editorDiv = useRef<HTMLDivElement>(null);
-  const [init,] = useState(false);
+  const modelMgr = appCtx.models;
+  const [, models] = useMonacoModels(modelMgr);
+  const init = useIsMonacoMounted(modelMgr);
 
-  const [models] = useState(['a']);
-
+  // Set theme of editor
   const theme = useTheme();
   useEffect(() => {
-    // editor.setTheme(theme);
-  }, [theme]);
+    modelMgr.setTheme(theme);
+  }, [theme, modelMgr]);
 
-  useEffect(() => {
-    // const hwnd = requestIdleCallback(() => {
-    //   editorObj.current = editor.create(editorDiv.current!, {
-    //     automaticLayout: true,
-    //     wordWrap: "on",
-    //     model: null,
-    //   });
-    // });
-
-    // return () => {
-    //   cancelIdleCallback(hwnd);
-    //   editorObj.current?.dispose();
-    // }
-  }, [editorObj]);
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.deltaY !== 0) {
+      e.currentTarget.scrollLeft += e.deltaY;
+    }
+  };
 
   return <div className="w-full h-full flex flex-col gap-2">
     {models.length == 0 ?
@@ -54,9 +36,14 @@ export default function EnhancedEditorView({ ref: editorObj }: { ref: RefObject<
 
     {(models.length != 0 && init) &&
       <>
-        <div className={`w-full border border-zinc-300 dark:border-border dark:bg-card flex flex-col text-start justify-start rounded-md items-start overflow-hidden p-1 pb-1.5 h-14 ${models.length == 0 ? "hidden" : ""}`}>
-          <div className="w-full h-12 overflow-y-hidden overflow-x-scroll scrollbar-small">
-
+        <div className={`w-full border border-zinc-300 dark:border-border dark:bg-card flex flex-col text-start justify-start rounded-md items-start overflow-hidden p-1 pb-0 h-9 ${models.length == 0 ? "hidden" : ""}`}>
+          <div
+            className="w-full h-full flex gap-1 overflow-y-hidden overflow-x-scroll scrollbar-small shrink-0"
+            onWheel={handleWheel}
+          >
+            {models.map((model) => <Fragment key={model.uri.toString()}>
+              <Tab model={model} />
+            </Fragment>)}
           </div>
         </div>
 
@@ -66,8 +53,8 @@ export default function EnhancedEditorView({ ref: editorObj }: { ref: RefObject<
       </>
     }
 
-    <div className={`${(models.length != 0 && init) ? "" : "hidden"} border border-zinc-300 dark:border-border overflow-x-hidden dark:bg-card w-full h-full flex items-start justify-start text-start rounded-md p-2`}>
-      <div className="w-full h-full" ref={editorDiv}></div>
+    <div className={`${(models.length != 0 && init) ? "" : "hidden!"} border border-zinc-300 dark:border-border overflow-x-hidden dark:bg-card w-full h-full flex items-start justify-start text-start rounded-md p-2`}>
+      <div className="w-full h-full" ref={ref}></div>
     </div>
   </div>
 }

@@ -6,10 +6,11 @@ import { requestMkdir, requestRm, requestTouch, useFsWorker } from "../../utils/
 import { FileEntry, Icon, FillEntry } from "./entry";
 
 import type { Entries } from "../../utils/fs/types";
-import type { ActiveRef, Callback, FileKind, RefNode, } from "./types";
+import { guessKind, type ActiveRef, type Callback, type FileKind, type RefNode, } from "./types";
 
 import { toast } from "sonner";
 import { ExpandIcon, FilePlus2, FolderPlusIcon, ShrinkIcon, TrashIcon } from "lucide-react";
+import { useAppCtx } from "../../utils/editor";
 
 interface Props {
   name: string;
@@ -169,14 +170,29 @@ export function DirContaier({ activeRef, name, path, sparse }: Props) {
 }
 
 export function DirectoryListing({ process, trigger, refNode, kind, activeRef, dirPath, entries }: { process?: (e?: HTMLFormElement) => void, trigger: RefObject<Callback>, refNode: RefNode, kind?: FileKind, activeRef: ActiveRef, dirPath: string[], entries: Entries | 'loading' }) {
+  const modelMgr = useAppCtx().models;
+
   const deleteFile = (name: string) => toast.promise(requestRm(dirPath.join("/"), name, false), {
     position: "bottom-right",
     loading: "Deleting file...",
     success: "Deleted",
     error: (err) => `An error occured: ${err}`
   });
-  const openEditor = () => {
-    toast.error("Coming Soon");
+
+  const openEditor = (dir: string[], file: string) => {
+    const id = file + dir.join('/');
+    toast.promise(modelMgr.createModel(dir, file), {
+      id,
+      position: "bottom-right",
+      loading: "Launching editor instance",
+      success: () => {
+        requestAnimationFrame(() => {
+          toast.dismiss(id);
+        });
+      },
+      dismissible: true,
+      error: (err) => `An error occured: ${err}`,
+    })
   };
 
   return <Fragment>
@@ -219,7 +235,7 @@ export function DirectoryListing({ process, trigger, refNode, kind, activeRef, d
                       activeRef.current = null;
                     }
 
-                    openEditor();
+                    openEditor(dirPath, val.name);
                   }}
                 />
               }
@@ -231,7 +247,7 @@ export function DirectoryListing({ process, trigger, refNode, kind, activeRef, d
                 <ContextMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    openEditor();
+                    openEditor(dirPath, val.name);
                   }}
                 >
                   <Icon kind={kind} expanded />
@@ -264,37 +280,3 @@ export function DirectoryListing({ process, trigger, refNode, kind, activeRef, d
   </Fragment>;
 }
 
-const tkns: { ends: (string | RegExp)[]; kind: FileKind; }[] = [
-  {
-    ends: [".js"],
-    kind: "js"
-  },
-  {
-    ends: [".ts"],
-    kind: "ts"
-  },
-  {
-    ends: [".bin", ".sabin", ".sbin", ".exe"],
-    kind: "bin"
-  },
-  {
-    ends: [".sasm"],
-    kind: "sasm"
-  },
-  {
-    ends: [/^.*\..*$/],
-    kind: "textfile"
-  }
-];
-
-const guessKind = (name: string) => {
-  for (const category of tkns) {
-    if (category.ends.some((s) =>
-      typeof s == 'string' ? name.endsWith(s) : s.test(name)
-    )) {
-      return category.kind
-    }
-  }
-
-  return "file"
-};

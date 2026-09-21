@@ -65,16 +65,31 @@ export async function requestMkdir(dir: string, dirName: string): Promise<void> 
   });
 }
 
-export async function requestTouch(dir: string, fileName: string): Promise<void> {
+export async function requestTouch(dir: string, fileName: string, content?: ArrayBuffer): Promise<void> {
   return sendWorkerCmd<void>({
     type: "cmd",
     cmd: "touch",
     dir,
     fileName,
+    content,
     token: 0
   }, (out, resolve) => {
     if (out.type === "out" && out.cmd === "touch") {
       resolve();
+    }
+  });
+}
+
+export async function requestCat(dir: string, fileName: string): Promise<ArrayBuffer> {
+  return sendWorkerCmd<ArrayBuffer>({
+    type: "cmd",
+    cmd: "cat",
+    dir,
+    fileName,
+    token: 0
+  }, (out, resolve) => {
+    if (out.type === "out" && out.cmd === "cat") {
+      resolve(out.content);
     }
   });
 }

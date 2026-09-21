@@ -15,7 +15,7 @@ export function FileEntry({ name, kind, loading, expanded, ...props }: Component
   return <button {...props} className="cursor-pointer h-6 max-h-6 text-xs rounded-md w-full hover:bg-border/80 dark:hover:bg-border flex text-center items-center px-1 gap-0.5">
     {
       loading ?
-        <Spinner className="size-3 max-size-3 min-size-3 mx-0.5" />
+        <Spinner className="size-3 max-w-3 min-w-3 mx-0.5" />
         :
         kind == 'dir' ?
           <ChevronRight className={`size-4 transition-all ${expanded ? "rotate-90" : ""}`} />
@@ -69,18 +69,18 @@ export function FillEntry({ kind, ref, cancel, ...props }: ComponentPropsWithout
 export function Icon({ kind, expanded }: { kind: FileKind, expanded?: boolean }) {
   switch (kind) {
     case "dir":
-      return expanded ? <FcOpenedFolder className="size-4" /> : <FcFolder className="size-4" />;
+      return expanded ? <FcOpenedFolder aria-label="Dir" className="size-4 min-w-4 max-w-4" /> : <FcFolder aria-label="Dir" className="size-4 min-w-4 max-w-4" />;
     case "bin":
-      return <LuBinary className="p-[0.5px] rounded-sm border border-red-800 dark:border-red-400 size-4 text-red-800 dark:text-red-400" />
+      return <LuBinary aria-label="Bin" className="p-[0.5px] rounded-sm border border-red-800 dark:border-red-400 size-4 min-w-4 max-w-4 text-red-800 dark:text-red-400" />
     case "sasm":
-      return <BsFileEarmarkBinaryFill className="size-4 text-red-800 dark:text-red-400" />
+      return <BsFileEarmarkBinaryFill aria-label="Sasm" className="size-4 min-w-4 max-w-4 text-red-800 dark:text-red-400" />
     case "textfile":
-      return <BsFileEarmarkTextFill className="size-4 text-zinc-500 dark:text-inherit" />;
+      return <BsFileEarmarkTextFill aria-label="Text" className="size-4 min-w-4 max-w-4 text-zinc-500 dark:text-inherit" />;
     case "js":
-      return <BsJavascript className="size-4 rounded-xs text-yellow-600 dark:text-[#F7DF1E]" />;
+      return <BsJavascript aria-label="JS" className="size-4 min-w-4 max-w-4 rounded-xs text-yellow-600 dark:text-[#F7DF1E]" />;
     case "ts":
-      return <BsTypescript className="size-4 rounded-xs text-[#3178C6]" />;
+      return <BsTypescript aria-label="TS" className="size-4 min-w-4 max-w-4 rounded-xs text-[#3178C6]" />;
     default:
-      return <BsFileEarmarkFill className="size-4 text-zinc-500 dark:text-inherit" />;
+      return <BsFileEarmarkFill aria-label="File" className="size-4 min-w-4 max-w-4 text-zinc-500 dark:text-inherit" />;
   }
 }

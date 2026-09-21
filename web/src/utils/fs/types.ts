@@ -12,7 +12,8 @@ export interface CmdPayloadMap {
   rm: { dir: string; toRemove: string; rf: boolean };
   dirExists: { dir: string };
   mkdir: { dir: string; dirName: string; };
-  touch: { dir: string; fileName: string; }
+  touch: { dir: string; fileName: string; content?: ArrayBuffer; };
+  cat: { dir: string; fileName: string; };
 }
 
 export interface CmdResultMap {
@@ -21,6 +22,7 @@ export interface CmdResultMap {
   dirExists: { exists: boolean };
   mkdir: void;
   touch: void;
+  cat: { content: ArrayBuffer };
 }
 
 export type CmdName = keyof CmdPayloadMap;

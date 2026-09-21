@@ -150,6 +150,7 @@
   @apply rounded-xl! w-2!;
 }
 
+/* Monaco */
 .monaco-editor .monaco-scrollable-element > .scrollbar.vertical,
 .monaco-editor .monaco-scrollable-element > .scrollbar.horizontal {
   background: transparent !important;
@@ -159,8 +160,9 @@
   display: none !important;
 }
 
+/* Scrollbar */
 .scrollbar-small::-webkit-scrollbar {
-  @apply transition-colors! h-2! mb-2!;
+  @apply transition-colors! h-1! mb-2!;
 }
 
 .scrollbar-small::-webkit-scrollbar-track {
